@@ -1,6 +1,7 @@
 
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
      mode: 'development',
@@ -44,6 +45,17 @@ module.exports = {
           ]
         },
      optimization: {
-     splitChunks: { chunks: "all" }
+     splitChunks: { chunks: "all" },
+    minimize: true,
+    //     minimizer: [
+    //   new TerserPlugin({
+    //     // sourceMap: true, // Must be set to true if using source-maps in production
+    //     terserOptions: {
+    //       compress: {
+    //         // drop_console: true, // << this needs only to remove console.log //
+    //       },
+    //     },
+    //   }),
+    // ],
      },
 }

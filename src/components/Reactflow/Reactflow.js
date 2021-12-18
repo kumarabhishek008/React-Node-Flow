@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 import ColorSelectorNode from './CustomNodeSelector';
 import ColorSelectorNode1 from './CustomNodeSelector1';
+import './styles.css';
 
 import ReactFlow, {
     isEdge,

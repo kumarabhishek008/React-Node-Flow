@@ -1,8 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Xarrow, { useXarrow, xarrowPropsType, Xwrapper } from "react-xarrows";
 import LinkIcon from '@material-ui/icons/Link';
 import Draggable from "react-draggable";
 import "./style.css";
+import LineCompo from "./LineCompo";
 
 const boxStyle = {
   border: "1px #999 solid",
@@ -31,6 +32,8 @@ const initialState = [
     id: "box1",
     expand: false,
     name: "Table 1",
+    xpos:'',
+    ypos:'',
     child: [
       { id: "box5", left: false, right: false },
       { id: "box6", left: false, right: false },
@@ -42,6 +45,8 @@ const initialState = [
     id: "box2",
     expand: false,
     name: "Table 2",
+    xpos:200,
+    ypos:'',
     child: [
       { id: "box9", left: false, right: false },
       { id: "box10", left: false, right: false },
@@ -49,28 +54,28 @@ const initialState = [
       { id: "box12", left: false, right: false },
     ],
   },
-  {
-    id: "box3",
-    expand: false,
-    name: "Table 3",
-    child: [
-      { id: "box13", left: false, right: false },
-      { id: "box14", left: false, right: false },
-      { id: "box16", left: false, right: false },
-      { id: "box17", left: false, right: false },
-    ],
-  },
-  {
-    id: "box4",
-    expand: false,
-    name: "Table 4",
-    child: [
-      { id: "box18", left: false, right: false },
-      { id: "box19", left: false, right: false },
-      { id: "box20", left: false, right: false },
-      { id: "box23", left: false, right: false },
-    ],
-  },
+  // {
+  //   id: "box3",
+  //   expand: false,
+  //   name: "Table 3",
+  //   child: [
+  //     { id: "box13", left: false, right: false },
+  //     { id: "box14", left: false, right: false },
+  //     { id: "box16", left: false, right: false },
+  //     { id: "box17", left: false, right: false },
+  //   ],
+  // },
+  // {
+  //   id: "box4",
+  //   expand: false,
+  //   name: "Table 4",
+  //   child: [
+  //     { id: "box18", left: false, right: false },
+  //     { id: "box19", left: false, right: false },
+  //     { id: "box20", left: false, right: false },
+  //     { id: "box23", left: false, right: false },
+  //   ],
+  // },
 ];
 
 const returnRotateFlow = (moveX, posX, moveY, posY) => {
@@ -88,10 +93,10 @@ const returnRotateFlow = (moveX, posX, moveY, posY) => {
   }
 };
 
-const SimpleTemplate = () => {
+const SimpleTemplate = ({updateXarrow}) => {
   const a = useRef(0);
 
-  const updateXarrow = useXarrow();
+  // const updateXarrow = useXarrow();
   const scrollFunc = () => {
     updateXarrow();
   };
@@ -122,6 +127,44 @@ const SimpleTemplate = () => {
     },
   });
 
+  const [pos, setpos] = useState()
+  const [dragPos, setDragPos] = useState({
+      x:'',
+      y:''
+  })
+
+  const handleDragPosition = (e, id) => {
+    
+      console.log(e.pageX, e.pageY)
+      setDragPos({
+          x:e.pageX-50,
+          y:e.pageY-50
+      })
+      setBoxArray([...boxArray.map((item)=>{
+        if(item.id===id){
+          item.xpos = e.pageX-50,
+          item.ypos = e.pageY-50
+        }
+        return item
+      })])
+  }
+
+  const onDragEnd = (e, id) => {
+
+      console.log(e.pageX, e.pageY)
+      setDragPos({
+          x:e.pageX-50,
+          y:e.pageY-50
+      })
+      setBoxArray([...boxArray.map((item)=>{
+        if(item.id===id){
+          item.xpos = e.pageX-50,
+          item.ypos = e.pageY-50
+        }
+        return item
+      })])
+  }
+
   // establish connection
   const setEndpoints = (e, id, parentId, key) => {console.log(id, parentId)
     e.stopPropagation();
@@ -138,6 +181,7 @@ const SimpleTemplate = () => {
           end: id,
           parentStart: point.parentStart,
           parentEnd: parentId,
+          position:position
         },
       ]);console.log(parentConnection)
       if(!parentConnection.some(items=>items.end===parentId)){
@@ -163,6 +207,10 @@ const SimpleTemplate = () => {
       });
     }
   };
+
+  useEffect(() => {
+    console.log(connection)
+  }, [connection])
 
   //on mouse down start making connection
   const connectNode = (e, id, parentId, key) => {
@@ -316,7 +364,7 @@ const SimpleTemplate = () => {
   return (
     <>
       <div style={canvasStyle} id="canvas" onScroll={scrollFunc}>
-        <Xwrapper>
+        {/* <Xwrapper> */}
           {position.display && (
             <svg style={position.style}>
               <path
@@ -330,6 +378,21 @@ const SimpleTemplate = () => {
               />
             </svg>
           )}
+          {
+            connection.map((items)=>{
+              <svg style={items.position.style}>
+              <path
+                className="line"
+                // d={`M ${position.sX}, ${position.sy} L ${position.lx}, ${position.sy} `}
+                fill="none"
+                d={`M${items.position.sX},${items.position.sy} 
+                 h${items.position.lx/2} 
+                 v${items.position.ly} 
+                 h${items.position.lx/2}`}
+              />
+            </svg>
+            })
+          }
           {/* <svg>
               <path fill="none" className="line" d="M 100, 100 h100 v100 h100 "/>
           </svg> */}
@@ -339,12 +402,7 @@ const SimpleTemplate = () => {
 </svg> */}
               
           {boxArray.map((items) => (
-            <Draggable
-              handle=".handle"
-              onDrag={updateXarrow}
-              onStop={updateXarrow}
-            >
-              <div className="container-side" id={items.id} key={items.id}>
+              <div className="container-side" id={items.id} draggable={true} key={items.id} onDrag={(e)=>handleDragPosition(e,items.id)} onDragEnd={(e)=>onDragEnd(e,items.id)} style={{position:'absolute',left:items.xpos, top:items.ypos}}>
                 <h3 className="handle">{items.name}</h3>
                 <input
                   onChange={(e) => handleChange(e.target.value)}
@@ -399,9 +457,8 @@ const SimpleTemplate = () => {
                     </>
                   ))}
               </div>
-            </Draggable>
           ))}
-          {
+          {/* {
             parentConnection.length &&
             parentConnection.map((items)=>            
             <Xarrow
@@ -419,7 +476,8 @@ const SimpleTemplate = () => {
               endAnchor="auto"
             />
             )
-          }
+          } */}
+
           {connection.length
             ? connection.map((items) => (
                 <Xarrow
@@ -439,10 +497,11 @@ const SimpleTemplate = () => {
                   }
                   startAnchor="auto"
                   endAnchor="auto"
+                  // gridBreak="20%"
                 />
               ))
             : ""}
-        </Xwrapper>
+        {/* </Xwrapper> */}
       </div>
     </>
   );

@@ -11,7 +11,7 @@ const CustomNodeSelector = ({ data, isConnectable }) => {
         onConnect={(params) => console.log('handle onConnect', params)}
         isConnectable={isConnectable}
       />
-      <div>
+      <div className="customNode-1">
         Custom Color Picker Node  1
       </div>
       <Handle
