@@ -9,6 +9,13 @@ import { TextField } from '@material-ui/core';
 import elementsArr from './elements';
 import { ContextMenu } from './contextMenu';
 import './styles.css';
+/**
+ *    imported these two component ***********************
+ */
+import CustomEdge from './CustomEdge';
+import CustomNodeSelector from './CustomNodeSelector';
+import Editor from './editorConfig';
+/***************************************************** */ 
 
 import ReactFlow, {
     isEdge,
@@ -27,6 +34,15 @@ const initBgColor = '#1A192B';
 const connectionLineStyle = { stroke: '#fff' };
 const snapGrid = [20, 20];
 
+// ************* added node types ********************
+const edgeTypes = {
+  customedge: CustomEdge,
+};
+
+const nodeTypes = {
+  customnode : CustomNodeSelector
+}
+// **************************************
 const Reactflow = () => {
     const [open, setOpen] = useState(false);
     const [reactflowInstance, setReactflowInstance] = useState(null);
@@ -92,7 +108,7 @@ const Reactflow = () => {
       const onConnect = useCallback(
         (params) =>
           setElements((els) =>
-            addEdge({ ...params, animated: true, style: { stroke: '#fff' },label:'dhvsdhvd',data:{ type:'edge'}, arrowHeadType: 'arrowclosed', }, els)
+            addEdge({ ...params, animated: true, type:'customedge', style: { stroke: '#fff' },label:'dhvsdhvd',data:{ type:'edge'}, arrowHeadType: 'arrowclosed', }, els)
           ),
         []
       );
@@ -136,7 +152,7 @@ const Reactflow = () => {
       const createNew = () => {
         const newNode = {
           id: getId(),
-          type: 'default',
+          type: 'customnode',
           data: { label: 'An input node', type:"node" },
           position: { x: 20, y: 20 },
           sourcePosition: 'right',
@@ -196,7 +212,18 @@ const Reactflow = () => {
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                   >
-                    <DialogTitle id="alert-dialog-title">{"Change Node Label"}</DialogTitle>
+                    {/* addded editor config */}
+
+                    <Editor
+                     setInputChange={setinputChange}
+                     value={inputChange}
+                     handleClose={handleClose}
+                     handleSave={handleSave}
+                    />
+
+                    {/* **************************** */}
+
+                    {/* <DialogTitle id="alert-dialog-title">{"Change Node Label"}</DialogTitle>
                     <DialogContent>
                       <TextField
                         label="Node Label"
@@ -211,7 +238,7 @@ const Reactflow = () => {
                       <Button onClick={handleSave} color="primary" autoFocus>
                         Save
                       </Button>
-                    </DialogActions>
+                    </DialogActions> */}
                   </Dialog>
                 <ReactFlow
                     elements={elements}
@@ -222,13 +249,17 @@ const Reactflow = () => {
                     onNodeDragStop={onNodeDragStop}
                     style={{ background: bgColor }}
                     onLoad={onLoad}
-                    // nodeTypes={nodeTypes}
+                    nodeTypes={nodeTypes}
                     onNodeContextMenu={onContextMenu}
                     connectionLineStyle={connectionLineStyle}
                     snapToGrid={true}
                     snapGrid={snapGrid}
+                    minZoom={0.5}
+                    maxZoom={2}
                     defaultZoom={0.9}
                     onNodeMouseEnter={handleMouseEnter}
+                    edgeTypes={edgeTypes}
+                    
                     >
                     <ContextMenu
                       isOpen={isOpen}

@@ -3,7 +3,7 @@ import React from 'react';
 export default [
   {
     id: '1',
-    type: 'input',
+    type: 'customnode',
     data: {
       label: 'welcome to react flow',
       type : 'node'
@@ -12,6 +12,7 @@ export default [
   },
   {
     id: '2',
+    type: "customnode",
     data: {
       label: 'This is default node',
       type : 'node'
@@ -64,8 +65,8 @@ export default [
 //     data: { label: 'Another output node', type : 'node' },
 //     position: { x: 400, y: 450 },
 //   },
-  { id: 'e1-2', source: '1', target: '2', label: 'this is an edge label', data : { type : 'edge' }, },
-  { id: 'e1-3', source: '1', target: '3', data : { type : 'edge' }, },
+  { id: 'e1-2', type : "customedge", source: '1', target: '2', label: 'this is an edge label', data : { type : 'edge' }, },
+  { id: 'e1-3', type : "customedge", source: '1', target: '3', data : { type : 'edge' }, },
   {
     id: 'e3-4',
     source: '3',

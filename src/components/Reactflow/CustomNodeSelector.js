@@ -6,32 +6,17 @@ const CustomNodeSelector = ({ data, isConnectable }) => {
     <>
       <Handle
         type="target"
-        position="left"
+        position="top"
         style={{ background: '#555' }}
         onConnect={(params) => console.log('handle onConnect', params)}
         isConnectable={isConnectable}
       />
-      <div>
-        Custom Color Picker Node: <strong>{data.color}</strong>
-      </div>
-      <input
-        className="nodrag"
-        type="color"
-        onChange={data.onChange}
-        defaultValue={data.color}
-      />
+      <div dangerouslySetInnerHTML={{__html: data.label}} style={{backgroundColor:'white', padding:'0.4rem 1rem', borderRadius:'4px', fontSize:'10px'}}/>
       <Handle
         type="source"
-        position="right"
-        id="a"
-        style={{ top: 10, background: '#555' }}
-        isConnectable={isConnectable}
-      />
-      <Handle
-        type="source"
-        position="right"
+        position="bottom"
         id="b"
-        style={{ bottom: 10, top: 'auto', background: '#555' }}
+        style={{ bottom: '-4px', top: 'auto', background: '#555' }}
         isConnectable={isConnectable}
       />
     </>
