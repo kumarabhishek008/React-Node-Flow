@@ -1,5 +1,6 @@
 import React from 'react';
 
+// chnaged data label in edge type
 export default [
   {
     id: '1',
@@ -65,7 +66,7 @@ export default [
 //     data: { label: 'Another output node', type : 'node' },
 //     position: { x: 400, y: 450 },
 //   },
-  { id: 'e1-2', type : "customedge", source: '1', target: '2', label: 'this is an edge label', data : { type : 'edge' }, },
+  { id: 'e1-2', type : "customedge", source: '1', target: '2', label: 'this is an edge label', data : { type : 'edge', label: 'this is an edge label' }, },
   { id: 'e1-3', type : "customedge", source: '1', target: '3', data : { type : 'edge' }, },
   {
     id: 'e3-4',

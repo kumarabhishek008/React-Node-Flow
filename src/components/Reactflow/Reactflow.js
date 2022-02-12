@@ -34,6 +34,12 @@ const initBgColor = '#1A192B';
 const connectionLineStyle = { stroke: '#fff' };
 const snapGrid = [20, 20];
 
+//added new onload function
+const onLoad = (reactFlowInstance) => {
+  reactFlowInstance.fitView();
+  console.log(reactFlowInstance.getElements());
+};
+
 // ************* added node types ********************
 const edgeTypes = {
   customedge: CustomEdge,
@@ -105,10 +111,12 @@ const Reactflow = () => {
           setElements((els) => removeElements(elementsToRemove, els)),
         []
       );
+
+      // chnaged label in data
       const onConnect = useCallback(
         (params) =>
           setElements((els) =>
-            addEdge({ ...params, animated: true, type:'customedge', style: { stroke: '#fff' },label:'dhvsdhvd',data:{ type:'edge'}, arrowHeadType: 'arrowclosed', }, els)
+            addEdge({ ...params, animated: true, type:'customedge', style: { stroke: '#fff' },label:'dhvsdhvd',data:{ type:'edge', label:'dhvsdhvd'}, arrowHeadType: 'arrowclosed', }, els)
           ),
         []
       );
@@ -118,15 +126,15 @@ const Reactflow = () => {
         setIsOpen(false);
       };
 
-      const onLoad = useCallback(
-        (rfi) => {
-          if (!reactflowInstance) {
-            setReactflowInstance(rfi);
-            console.log('flow loaded:', rfi);
-          }
-        },
-        [reactflowInstance]
-      );
+      // const onLoad = useCallback(
+      //   (rfi) => {
+      //     if (!reactflowInstance) {
+      //       setReactflowInstance(rfi);
+      //       console.log('flow loaded:', rfi);
+      //     }
+      //   },
+      //   [reactflowInstance]
+      // );
 
       let id = elements.length;
       const getId = () => `dndnode_${id++}`;
@@ -243,7 +251,6 @@ const Reactflow = () => {
                 <ReactFlow
                     elements={elements}
                     onElementClick={onElementClick}
-                    // onNodeMouseLeave={onNodeMouseLeave}
                     onElementsRemove={onElementsRemove}
                     onConnect={onConnect}
                     onNodeDragStop={onNodeDragStop}
@@ -254,9 +261,8 @@ const Reactflow = () => {
                     connectionLineStyle={connectionLineStyle}
                     snapToGrid={true}
                     snapGrid={snapGrid}
-                    minZoom={0.5}
                     maxZoom={2}
-                    defaultZoom={0.9}
+                    defaultZoom={1.5}
                     onNodeMouseEnter={handleMouseEnter}
                     edgeTypes={edgeTypes}
                     

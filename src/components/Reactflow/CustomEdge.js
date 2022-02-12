@@ -54,14 +54,14 @@ export default function CustomEdge({
       />
       <foreignObject
         width={100}
-        height={20}
-        x={edgeCenterX - foreignObjectSize / 2}
+        height={50}
+        x={edgeCenterX - foreignObjectSize / 4}
         y={edgeCenterY - foreignObjectSize / 2}
         className="edgebutton-foreignobject"
         requiredExtensions="http://www.w3.org/1999/xhtml"
       >
         <body>
-            <div dangerouslySetInnerHTML={{__html: data.label}} style={{backgroundColor:'white', padding:'0.4rem 1rem', borderRadius:'4px', fontSize:'10px'}}/>
+            <div dangerouslySetInnerHTML={{__html: data.label}} style={{backgroundColor:'white', padding:'0.4rem 1rem', borderRadius:'4px', fontSize:'10px', cursor:'pointer'}}/>
         </body>
       </foreignObject>
     </>
