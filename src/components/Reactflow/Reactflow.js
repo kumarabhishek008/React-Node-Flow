@@ -98,6 +98,7 @@ const Reactflow = () => {
       const handleClose = () => {
         setOpen(false);
         setElements([...elements])
+        setnodeData(null);
       };
 
       useEffect(() => {
@@ -116,7 +117,7 @@ const Reactflow = () => {
       const onConnect = useCallback(
         (params) =>
           setElements((els) =>
-            addEdge({ ...params, animated: true, type:'customedge', style: { stroke: '#fff' },label:'dhvsdhvd',data:{ type:'edge', label:'dhvsdhvd'}, arrowHeadType: 'arrowclosed', }, els)
+            addEdge({ ...params,id : `edge_${elements.length+1}`, animated: false, type:'customedge', style: { stroke: '#fff' },label:'dhvsdhvd',data:{ type:'edge', label:'dhvsdhvd'}, arrowHeadType: 'arrowclosed', }, els)
           ),
         []
       );
@@ -137,7 +138,7 @@ const Reactflow = () => {
       // );
 
       let id = elements.length;
-      const getId = () => `dndnode_${id++}`;
+      const getId = () => `node_${id+1}`;
 
       const handleSave = () => {
         const findIndex = elements.findIndex(items=>items.id===nodeData.id);
@@ -155,6 +156,8 @@ const Reactflow = () => {
           }
         }
         handleClose();
+        setinputChange("");
+        setnodeData(null);
       }
 
       const createNew = () => {
@@ -221,13 +224,15 @@ const Reactflow = () => {
                     aria-describedby="alert-dialog-description"
                   >
                     {/* addded editor config */}
-
-                    <Editor
-                     setInputChange={setinputChange}
-                     value={inputChange}
-                     handleClose={handleClose}
-                     handleSave={handleSave}
-                    />
+                    {
+                      nodeData &&
+                      <Editor
+                      setInputChange={setinputChange}
+                      value={inputChange}
+                      handleClose={handleClose}
+                      handleSave={handleSave}
+                      />
+                    }
 
                     {/* **************************** */}
 

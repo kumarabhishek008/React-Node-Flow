@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   getBezierPath,
+  getSmoothStepPath,
   getEdgeCenter,
   getMarkerEnd,
 } from 'react-flow-renderer';
@@ -27,7 +28,7 @@ export default function CustomEdge({
   arrowHeadType,
   markerEndId,
 }) {
-  const edgePath = getBezierPath({
+  const edgePath = getSmoothStepPath({
     sourceX,
     sourceY,
     sourcePosition,
@@ -51,6 +52,7 @@ export default function CustomEdge({
         className="react-flow__edge-path"
         d={edgePath}
         markerEnd={markerEnd}
+        type="StraightEdge"
       />
       <foreignObject
         width={100}
@@ -61,7 +63,7 @@ export default function CustomEdge({
         requiredExtensions="http://www.w3.org/1999/xhtml"
       >
         <body>
-            <div dangerouslySetInnerHTML={{__html: data.label}} style={{backgroundColor:'white', padding:'0.4rem 1rem', borderRadius:'4px', fontSize:'10px', cursor:'pointer'}}/>
+            <div dangerouslySetInnerHTML={{__html: data.label}} style={{backgroundColor:'white', borderRadius:'4px', fontSize:'8px', cursor:'pointer', width:'fit-content'}}/>
         </body>
       </foreignObject>
     </>
