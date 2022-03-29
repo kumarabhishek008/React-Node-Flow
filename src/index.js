@@ -24,8 +24,8 @@ function App() {
           {/* <NewApp /> */}
           {/* <ReactReandererFlow/> */}
           {/* <Xaarow updateXarrow={updateXarrow}/> */}
-          {/* <Reactflow/> */}
-          <Editor/>
+          <Reactflow/>
+          {/* <Editor/> */}
           {/* <ReactFlowDND/> */}
           {/* <NodeFlow/> */}
           {/* <Component1/> */}
