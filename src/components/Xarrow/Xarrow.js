@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import Xarrow, { useXarrow, xarrowPropsType, Xwrapper } from "react-xarrows";
 import LinkIcon from '@material-ui/icons/Link';
 import Draggable from "react-draggable";
-import "./style.css";
-import LineCompo from "./LineCompo";
+import "../style.css";
+import LineCompo from "../LineCompo";
+import { getSmoothStepPath } from "./edgeStyle";
 
 const boxStyle = {
   border: "1px #999 solid",
@@ -14,7 +15,7 @@ const boxStyle = {
   color: "black",
   alignItems: "center",
   display: "flex",
-  justifyContent: "center",
+  justifyContent: "start",
 };
 
 const canvasStyle = {
@@ -134,7 +135,7 @@ const SimpleTemplate = ({updateXarrow}) => {
   })
 
   const handleDragPosition = (e, id) => {
-    
+      updateXarrow()
       console.log(e.pageX, e.pageY)
       setDragPos({
           x:e.pageX-50,
@@ -219,30 +220,29 @@ const SimpleTemplate = ({updateXarrow}) => {
     var element = e.target;
     let boxCenter = {
       x:
-        element.getBoundingClientRect().left +
-        element.getBoundingClientRect().width / 2,
+        element.getBoundingClientRect().left,
       y:
-        element.getBoundingClientRect().top +
-        element.getBoundingClientRect().height / 2,
+        element.getBoundingClientRect().top-5,
     };
     var topPos = element.getBoundingClientRect().top + window.scrollY;
     var leftPos = element.getBoundingClientRect().left + window.scrollX;
     setEndpoints(e, id, parentId, key);
-    console.log(e.pageX, e.pageY);
+    console.log(e.pageX, e.pageY, boxCenter.x, boxCenter.y);
     setposition({
       ...position,
       display: true,
-      sX: e.pageX,
-      sy: e.pageY,
+      sX: boxCenter.x,
+      sy: boxCenter.y,
       lX: e.pageX,
       ly: e.pageY,
       style: {
         position: "absolute",
-        top: element.getBoundingClientRect().top,
-        left: element.getBoundingClientRect().left,
+        top: boxCenter.y,
+        left: boxCenter.x,
       },
     });
-    document.onmousemove = (event) => {console.log(event.pageX, event.pageY)
+    document.onmousemove = (event) => {console.log(event.pageX, event.pageY, event.target.id)
+      event.preventDefault();
       let angle =
         Math.atan2(event.pageX - boxCenter.x, -(event.pageY - boxCenter.y)) *
         (180 / Math.PI);
@@ -256,8 +256,8 @@ const SimpleTemplate = ({updateXarrow}) => {
         ly: Math.abs(event.pageY - e.pageY),
         style: {
           position: "absolute",
-          top: Math.abs(e.pageY + (posVal.top) - 2),
-          left: Math.abs(e.pageX),
+          top: Math.abs(boxCenter.y+10),
+          left: Math.abs(boxCenter.x),
           width: Math.abs(event.pageX - e.pageX),
           height: Math.abs(event.pageY - e.pageY),
           transformOrigin: "0% 0%",
@@ -276,18 +276,18 @@ const SimpleTemplate = ({updateXarrow}) => {
   const stopConnection = (e) => {
     document.onmousemove = null;
     document.onMouseDown = null;
-    // setposition({
-    //   display: false,
-    //   sX: "0",
-    //   sy: "0",
-    //   lx: "",
-    //   ly: "",
-    //   style: {
-    //     top: "",
-    //     left: "",
-    //     position: "absolute",
-    //   },
-    // });
+    setposition({
+      display: false,
+      sX: "0",
+      sy: "0",
+      lx: "",
+      ly: "",
+      style: {
+        top: "",
+        left: "",
+        position: "absolute",
+      },
+    });
   };
 
   //on mouse up
@@ -367,15 +367,19 @@ const SimpleTemplate = ({updateXarrow}) => {
         {/* <Xwrapper> */}
           {position.display && (
             <svg style={position.style}>
-              <path
-                className="line"
-                // d={`M ${position.sX}, ${position.sy} L ${position.lx}, ${position.sy} `}
-                fill="none"
-                d={`M${position.sX},${position.sy} 
-                 h${position.lx/2} 
-                 v${position.ly} 
-                 h${position.lx/2}`}
-              />
+              <g>
+                <path
+                  className="line"
+                  // d={`M ${position.sX}, ${position.sy} L ${position.lx}, ${position.sy} `}
+                  fill="none"
+                  d={`M${position.sX},${position.sy} 
+                  h${position.lx/2} 
+                  v${position.ly} 
+                  h${position.lx/2}
+                  `}
+                  // d={getSmoothStepPath(position.sX, position.sy, 'top', position.lX, position.ly, 'top')}
+                />
+              </g>
             </svg>
           )}
           {
@@ -398,13 +402,22 @@ const SimpleTemplate = ({updateXarrow}) => {
           </svg> */}
 
           {/* <svg width="500px" height="320px"> 
-  <path d="M200,10 h100 v100 h100 v100 h-100 v100 h-100 v-100 h-100 v-100 h100 Z" fill="none" stroke="black"/>
-</svg> */}
+            <path d="M200,10 h100 v100 h100 v100 h-100 v100 h-100 v-100 h-100 v-100 h100" fill="none" stroke="black"/>
+          </svg> */}
               
           {boxArray.map((items) => (
-              <div className="container-side" id={items.id} draggable={true} key={items.id} onDrag={(e)=>handleDragPosition(e,items.id)} onDragEnd={(e)=>onDragEnd(e,items.id)} style={{position:'absolute',left:items.xpos, top:items.ypos}}>
+            <Draggable
+            key={items.id} 
+            onDrag={(e)=>handleDragPosition(e,items.id)} 
+            onDragEnd={(e)=>onDragEnd(e,items.id)} 
+            style={{position:'absolute',left:items.xpos, top:items.ypos}}
+            >
+              <div className="container-side" 
+              id={items.id}
+              style={{ width:'200px', height:'fit-content'}}
+               >
                 <h3 className="handle">{items.name}</h3>
-                <input
+                {/* <input
                   onChange={(e) => handleChange(e.target.value)}
                   placeholder="Input id ..."
                 />
@@ -412,8 +425,8 @@ const SimpleTemplate = ({updateXarrow}) => {
                   onChange={(e) => setAnchorPoints(e.target.value)}
                   ref={a}
                   placeholder="Input anchors ..."
-                />
-                <button onClick={() => onexpand(items.id)}>Expand</button>
+                /> */}
+                <button onClick={() => onexpand(items.id)} className="expandButton">+</button>
                 {items.expand &&
                   items.child.map((item) => (
                     <>
@@ -431,6 +444,7 @@ const SimpleTemplate = ({updateXarrow}) => {
                             (
                               <i
                                 className="fa fa-plus"
+                                style={{width:'10px', height:'10px'}}
                                 onMouseDown={(e) =>
                                   connectNode(e, item.id, items.id,'start')
                                 }
@@ -438,13 +452,14 @@ const SimpleTemplate = ({updateXarrow}) => {
                               ></i>
                             )}
                             <div id={item.id} style={{ ...boxStyle }}>
-                              {item.id}
+                              <input type="checkbox"/>{item.id}
                             </div>
                             {
                             // item.right && 
                             (
                               <i
                                 className="fa fa-plus"
+                                style={{width:'10px', height:'10px'}}
                                 onMouseDown={(e) =>
                                   connectNode(e, item.id, items.id,'start')
                                 }
@@ -457,6 +472,7 @@ const SimpleTemplate = ({updateXarrow}) => {
                     </>
                   ))}
               </div>
+            </Draggable>
           ))}
           {/* {
             parentConnection.length &&
@@ -497,7 +513,6 @@ const SimpleTemplate = ({updateXarrow}) => {
                   }
                   startAnchor="auto"
                   endAnchor="auto"
-                  // gridBreak="20%"
                 />
               ))
             : ""}

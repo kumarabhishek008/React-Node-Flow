@@ -15,7 +15,15 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    /* position: relative; */
+    border:1px solid #b3b3b3;
+}
+.expandButton{
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 .fa{
     font-size: x-small;
+    opacity: 0.01;
 }
