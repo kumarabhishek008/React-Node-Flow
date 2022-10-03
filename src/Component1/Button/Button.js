@@ -2,9 +2,13 @@ import React from 'react';
 import './button.css';
 
 const Button = ({ label }) => {
+    const handleSubmit = (e) => { e.preventDefault() }
     return (
         <div>
-            <button data-testid="button" className="button">{label}</button>
+            <form onSubmit={handleSubmit}>
+                <input type='text' name="name"/>
+                <button data-testid="button" type='submit' className="button">{label}</button>
+            </form>
         </div>
     )
 }

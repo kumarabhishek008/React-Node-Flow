@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import Xarrow, { useXarrow, xarrowPropsType, Xwrapper } from "react-xarrows";
+import Line from "./index";
 import LinkIcon from '@material-ui/icons/Link';
 import Draggable from "react-draggable";
 import "../style.css";
 import LineCompo from "../LineCompo";
 import { getSmoothStepPath } from "./edgeStyle";
+import { initialState } from "./elements";
 
 const boxStyle = {
   border: "1px #999 solid",
@@ -27,57 +28,6 @@ const canvasStyle = {
   color: "black",
   cursor: "pointer",
 };
-
-const initialState = [
-  {
-    id: "box1",
-    expand: false,
-    name: "Table 1",
-    xpos:'',
-    ypos:'',
-    child: [
-      { id: "box5", left: false, right: false },
-      { id: "box6", left: false, right: false },
-      { id: "box7", left: false, right: false },
-      { id: "box8", left: false, right: false },
-    ],
-  },
-  {
-    id: "box2",
-    expand: false,
-    name: "Table 2",
-    xpos:200,
-    ypos:'',
-    child: [
-      { id: "box9", left: false, right: false },
-      { id: "box10", left: false, right: false },
-      { id: "box11", left: false, right: false },
-      { id: "box12", left: false, right: false },
-    ],
-  },
-  // {
-  //   id: "box3",
-  //   expand: false,
-  //   name: "Table 3",
-  //   child: [
-  //     { id: "box13", left: false, right: false },
-  //     { id: "box14", left: false, right: false },
-  //     { id: "box16", left: false, right: false },
-  //     { id: "box17", left: false, right: false },
-  //   ],
-  // },
-  // {
-  //   id: "box4",
-  //   expand: false,
-  //   name: "Table 4",
-  //   child: [
-  //     { id: "box18", left: false, right: false },
-  //     { id: "box19", left: false, right: false },
-  //     { id: "box20", left: false, right: false },
-  //     { id: "box23", left: false, right: false },
-  //   ],
-  // },
-];
 
 const returnRotateFlow = (moveX, posX, moveY, posY) => {
   if (moveX - posX > 1 && moveY - posY > 1) {
@@ -407,70 +357,93 @@ const SimpleTemplate = ({updateXarrow}) => {
               
           {boxArray.map((items) => (
             <Draggable
+            handle=".handle"
             key={items.id} 
             onDrag={(e)=>handleDragPosition(e,items.id)} 
             onDragEnd={(e)=>onDragEnd(e,items.id)} 
             style={{position:'absolute',left:items.xpos, top:items.ypos}}
+
             >
               <div className="container-side" 
               id={items.id}
               style={{ width:'200px', height:'fit-content'}}
                >
-                <h3 className="handle">{items.name}</h3>
-                {/* <input
-                  onChange={(e) => handleChange(e.target.value)}
-                  placeholder="Input id ..."
-                />
-                <input
-                  onChange={(e) => setAnchorPoints(e.target.value)}
-                  ref={a}
-                  placeholder="Input anchors ..."
-                /> */}
+                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', width:'100%', position:'relative'}}>
+                    {
+                      // item.left && 
+                      (
+                        <i
+                          className="fa fa-plus"
+                          style={{width:'20px', height:'10px',position:'absolute', left:'-5px'}}
+                          onMouseDown={(e) =>
+                            connectNode(e, items.id+items.name, null,'start')
+                          }
+                          onMouseUp={(e) => onMouseUp(e, items.id+items.name, null,'end')}
+                        ></i>
+                      )}
+                    <h3 style={{ width:'100%', textAlign:'center'}} onStart={true} className="handle" id={items.id+items.name}>{items.name}</h3>
+                    {
+                      // item.right && 
+                      (
+                        <i
+                          className="fa fa-plus"
+                          style={{width:'20px', height:'10px',position:'absolute', right:'-5px'}}
+                          onMouseDown={(e) =>
+                            connectNode(e, items.id+items.name, null,'start')
+                          }
+                          onMouseUp={(e) => onMouseUp(e, items.id+items.name, null,'end')}
+                        ></i>
+                      )}
+                 </div>
                 <button onClick={() => onexpand(items.id)} className="expandButton">+</button>
-                {items.expand &&
-                  items.child.map((item) => (
-                    <>
-                      <div>
+                <div>
+                  {items.expand &&
+                    items.child.map((item) => (
+                      <>
                         <div>
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            {
-                            // item.left && 
-                            (
-                              <i
-                                className="fa fa-plus"
-                                style={{width:'10px', height:'10px'}}
-                                onMouseDown={(e) =>
-                                  connectNode(e, item.id, items.id,'start')
-                                }
-                                onMouseUp={(e) => onMouseUp(e, item.id, items.id,'end')}
-                              ></i>
-                            )}
-                            <div id={item.id} style={{ ...boxStyle }}>
-                              <input type="checkbox"/>{item.id}
+                          <div>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              {
+                              // item.left && 
+                              (
+                                <i
+                                  className="fa fa-plus"
+                                  style={{width:'10px', height:'10px'}}
+                                  onMouseDown={(e) =>
+                                    connectNode(e, item.id, items.id,'start')
+                                  }
+                                  onMouseUp={(e) => onMouseUp(e, item.id, items.id,'end')}
+                                ></i>
+                              )}
+                              <div id={item.id} style={{ ...boxStyle }} 
+                              onMouseUp={(e) => onMouseUp(e, item.id, items.id,'end')}
+                              >
+                                <input type="checkbox"/> <p>Column</p>
+                              </div>
+                              {
+                              // item.right && 
+                              (
+                                <i
+                                  className="fa fa-plus"
+                                  style={{width:'10px', height:'10px'}}
+                                  onMouseDown={(e) =>
+                                    connectNode(e, item.id, items.id,'start')
+                                  }
+                                  onMouseUp={(e) => onMouseUp(e, item.id, items.id,'end')}
+                                ></i>
+                              )}
                             </div>
-                            {
-                            // item.right && 
-                            (
-                              <i
-                                className="fa fa-plus"
-                                style={{width:'10px', height:'10px'}}
-                                onMouseDown={(e) =>
-                                  connectNode(e, item.id, items.id,'start')
-                                }
-                                onMouseUp={(e) => onMouseUp(e, item.id, items.id,'end')}
-                              ></i>
-                            )}
                           </div>
                         </div>
-                      </div>
-                    </>
-                  ))}
+                      </>
+                    ))}
+                </div>
               </div>
             </Draggable>
           ))}
@@ -496,7 +469,7 @@ const SimpleTemplate = ({updateXarrow}) => {
 
           {connection.length
             ? connection.map((items) => (
-                <Xarrow
+                <Line
                   path="grid"
                   strokeWidth={0.5}
                   zIndex={1000}

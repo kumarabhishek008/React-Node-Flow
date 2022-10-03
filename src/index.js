@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { render } from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
-import Xaarow from './components/Xarrow/Xarrow';
+import Xaarow from './components/Xarrow/NodeArrow';
 import Reactflow from "./components/Reactflow/Reactflow";
 import Xarrow, { useXarrow, xarrowPropsType, Xwrapper } from "react-xarrows";
 import NewApp from "./App";
@@ -11,6 +11,7 @@ import { ApiContextProvider } from "./utils/ApiContext";
 import ChatView from "./components/chatview";
 import Editor from "./components/Editor";
 import ReactFlowPoc from "./components/ReactFlowPoc";
+import Table from './Component1/Table';
 
 function App() {
   const updateXarrow = useXarrow();
@@ -22,6 +23,7 @@ function App() {
           {/* <NewApp /> */}
           {/* <ReactReandererFlow/> */}
           {/* <Xaarow updateXarrow={updateXarrow}/> */}
+          {/* <Table/> */}
           {/* <ReactFlowPoc/> */}
           <Reactflow/>
           {/* <Editor/> */}

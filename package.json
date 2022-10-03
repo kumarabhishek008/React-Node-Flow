@@ -16,6 +16,7 @@
     "@editorjs/editorjs": "^2.22.2",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
+    "axios": "^0.27.2",
     "bootstrap": "^4.6.0",
     "firebase": "^8.10.0",
     "jquery": "^3.6.0",
@@ -30,8 +31,10 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
     "react-xarrows": "^2.0.2",
+    "sinon": "^14.0.0",
     "suneditor": "^2.42.0",
-    "suneditor-react": "^3.3.1"
+    "suneditor-react": "^3.3.1",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
@@ -41,6 +44,8 @@
     "@testing-library/react": "^12.1.2",
     "babel-loader": "^8.2.2",
     "css-loader": "^5.0.1",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
     "express": "^4.17.1",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^4.5.1",
