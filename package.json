@@ -33,7 +33,7 @@
     "react-draggable": "^4.4.4",
     "react-flow-renderer": "^10.0.8",
     "react-lottie": "^1.2.3",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "^6.26.1",
     "react-scripts": "^4.0.3",
     "react-xarrows": "^2.0.2",
     "sinon": "^14.0.0",

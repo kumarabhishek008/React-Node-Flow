@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { render } from "react-dom";
-import ReactFlowPoc2 from "./components/ReactFlowPoc2";
+import AppContainer from "./App";
 
 function App() {
   return (
     <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <ReactFlowPoc2 />
+      <AppContainer />
     </div>
   );
 }
