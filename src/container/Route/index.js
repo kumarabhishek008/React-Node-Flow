@@ -4,7 +4,7 @@ import ReactFlowPoc from "../../components/ReactFlowPoc";
 import Flow from "../../components/flow";
 import Home from "../home";
 import ReactflowDnd from "../../components/ReactFlowDnd";
-import ReactXarrow from "../../components/Xarrow";
+import ReactXarrow from "../../components/Xarrow2";
 import ReactSidebar from "../../components/Sidebar";
 
 const RouteContainer = (props) => {
@@ -12,16 +12,16 @@ const RouteContainer = (props) => {
     <>
       <BrowserRouter
         future={{
-          v7_relativeSplatPath: true,
+          v7_startTransition: true,
         }}
       >
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/reactflowpoc" element={<ReactFlowPoc />} />
-          <Route path="/flow" element={<Flow />} />
-          <Route path="/reactflowdnd" element={<ReactflowDnd />} />
+          <Route path="reactflowpoc" element={<ReactFlowPoc />} />
+          <Route path="flow" element={<Flow />} />
+          <Route path="reactflowdnd" element={<ReactflowDnd />} />
+          <Route path="sidebar" element={<ReactSidebar />} />
           <Route path="/xarrow" element={<ReactXarrow />} />
-          <Route path="/sidebar" element={<ReactSidebar />} />
         </Routes>
       </BrowserRouter>
     </>
