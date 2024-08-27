@@ -5,17 +5,17 @@ const Home = () => {
   return (
     <div>
       <p>All features link</p>
-      <Link to={"/reactflowpoc"}>React Flow POC</Link>
+      <a href={"/reactflowpoc"}>React Flow POC</a>
       <br />
-      <Link to={"/flow"}>Flow</Link>
+      <a href={"/flow"}>Flow</a>
       <br />
-      <Link to={"/reactflowpoc2"}>React flow poc 2</Link>
+      <a href={"/reactflowpoc2"}>React flow poc 2</a>
       <br />
-      <Link to={"/reactflowdnd"}>React flow dnd</Link>
+      <a href={"/reactflowdnd"}>React flow dnd</a>
       <br />
-      <Link to={"/sidebar"}>Sidebar</Link>
+      <a href={"/sidebar"}>Sidebar</a>
       <br />
-      <Link to={"/xarrow"}>Xarrow</Link>
+      <a href={"/xarrow"}>Xarrow</a>
     </div>
   );
 };

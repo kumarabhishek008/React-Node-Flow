@@ -1,29 +1,38 @@
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ReactFlowPoc from "../../components/ReactFlowPoc";
 import Flow from "../../components/flow";
 import Home from "../home";
 import ReactflowDnd from "../../components/ReactFlowDnd";
 import ReactXarrow from "../../components/Xarrow2";
 import ReactSidebar from "../../components/Sidebar";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 const RouteContainer = (props) => {
+  console.log(props);
   return (
     <>
-      <BrowserRouter
-        future={{
-          v7_startTransition: true,
-        }}
-      >
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="reactflowpoc" element={<ReactFlowPoc />} />
-          <Route path="flow" element={<Flow />} />
-          <Route path="reactflowdnd" element={<ReactflowDnd />} />
-          <Route path="sidebar" element={<ReactSidebar />} />
-          <Route path="/xarrow" element={<ReactXarrow />} />
-        </Routes>
-      </BrowserRouter>
+      <Router>
+        <Switch>
+          <Route path="/reactflowpoc">
+            <ReactFlowPoc />
+          </Route>
+          <Route path="/flow">
+            <Flow />
+          </Route>
+          <Route path="/reactflowdnd">
+            <ReactflowDnd />
+          </Route>
+          <Route path="/sidebar">
+            <ReactSidebar />
+          </Route>
+          <Route path="/xarrow">
+            <ReactXarrow />
+          </Route>
+          <Route path="/">
+            <ReactXarrow />
+          </Route>
+        </Switch>
+      </Router>
     </>
   );
 };

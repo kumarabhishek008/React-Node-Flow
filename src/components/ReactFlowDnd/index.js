@@ -1,53 +1,47 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from "react";
 import ReactFlow, {
   ReactFlowProvider,
   addEdge,
-  removeElements,
+  // removeElements,
   Controls,
-} from 'react-flow-renderer';
+} from "react-flow-renderer";
 
-import Sidebar from './Sidebar';
-
-
+import Sidebar from "./Sidebar";
 
 // import '../../dnd.css';
 
 const initialElements = [
   {
-    id: '1',
-    type: 'input',
-    data: { label: 'input node' },
+    id: "1",
+    type: "input",
+    data: { label: "input node" },
     position: { x: 250, y: 5 },
   },
 ];
-
-
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
 const DnDFlow = () => {
-
   const reactFlowWrapper = useRef(null);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [elements, setElements] = useState(initialElements);
   const onConnect = (params) => setElements((els) => addEdge(params, els));
-  const onElementsRemove = (elementsToRemove) =>
-    setElements((els) => removeElements(elementsToRemove, els));
+  const onElementsRemove = (elementsToRemove) => setElements((els) => els);
 
   const onLoad = (_reactFlowInstance) =>
     setReactFlowInstance(_reactFlowInstance);
 
   const onDragOver = (event) => {
     event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
+    event.dataTransfer.dropEffect = "move";
   };
 
   const onDrop = (event) => {
     event.preventDefault();
 
     const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-    const type = event.dataTransfer.getData('application/reactflow');
+    const type = event.dataTransfer.getData("application/reactflow");
     const position = reactFlowInstance.project({
       x: event.clientX - reactFlowBounds.left,
       y: event.clientY - reactFlowBounds.top,
@@ -71,7 +65,6 @@ const DnDFlow = () => {
             onConnect={onConnect}
             onElementsRemove={onElementsRemove}
             onLoad={onLoad}
-            
             onDrop={onDrop}
             onDragOver={onDragOver}
           >
