@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import Line from "./index";
-import LinkIcon from '@material-ui/icons/Link';
+import LinkIcon from "@material-ui/icons/Link";
 import Draggable from "react-draggable";
 import "../style.css";
 import LineCompo from "../LineCompo";
@@ -44,7 +44,7 @@ const returnRotateFlow = (moveX, posX, moveY, posY) => {
   }
 };
 
-const SimpleTemplate = ({updateXarrow}) => {
+const SimpleTemplate = ({ updateXarrow }) => {
   const a = useRef(0);
 
   // const updateXarrow = useXarrow();
@@ -52,7 +52,7 @@ const SimpleTemplate = ({updateXarrow}) => {
     updateXarrow();
   };
 
-  const [flag, setflag] = useState(false)
+  const [flag, setflag] = useState(false);
 
   const [boxArray, setBoxArray] = useState(initialState);
 
@@ -63,7 +63,7 @@ const SimpleTemplate = ({updateXarrow}) => {
     parentStart: null,
     parentEnd: null,
   });
-  const [parentConnection, setParentConnection] = useState([])
+  const [parentConnection, setParentConnection] = useState([]);
   const [connection, setConnection] = useState([]);
   const [position, setposition] = useState({
     display: false,
@@ -78,48 +78,50 @@ const SimpleTemplate = ({updateXarrow}) => {
     },
   });
 
-  const [pos, setpos] = useState()
+  const [pos, setpos] = useState();
   const [dragPos, setDragPos] = useState({
-      x:'',
-      y:''
-  })
+    x: "",
+    y: "",
+  });
 
   const handleDragPosition = (e, id) => {
-      updateXarrow()
-      console.log(e.pageX, e.pageY)
-      setDragPos({
-          x:e.pageX-50,
-          y:e.pageY-50
-      })
-      setBoxArray([...boxArray.map((item)=>{
-        if(item.id===id){
-          item.xpos = e.pageX-50,
-          item.ypos = e.pageY-50
+    // updateXarrow()
+    console.log(e.pageX, e.pageY);
+    setDragPos({
+      x: e.pageX - 50,
+      y: e.pageY - 50,
+    });
+    setBoxArray([
+      ...boxArray.map((item) => {
+        if (item.id === id) {
+          (item.xpos = e.pageX - 50), (item.ypos = e.pageY - 50);
         }
-        return item
-      })])
-  }
+        return item;
+      }),
+    ]);
+  };
 
   const onDragEnd = (e, id) => {
-
-      console.log(e.pageX, e.pageY)
-      setDragPos({
-          x:e.pageX-50,
-          y:e.pageY-50
-      })
-      setBoxArray([...boxArray.map((item)=>{
-        if(item.id===id){
-          item.xpos = e.pageX-50,
-          item.ypos = e.pageY-50
+    console.log(e.pageX, e.pageY);
+    setDragPos({
+      x: e.pageX - 50,
+      y: e.pageY - 50,
+    });
+    setBoxArray([
+      ...boxArray.map((item) => {
+        if (item.id === id) {
+          (item.xpos = e.pageX - 50), (item.ypos = e.pageY - 50);
         }
-        return item
-      })])
-  }
+        return item;
+      }),
+    ]);
+  };
 
   // establish connection
-  const setEndpoints = (e, id, parentId, key) => {console.log(id, parentId)
+  const setEndpoints = (e, id, parentId, key) => {
+    console.log(id, parentId);
     e.stopPropagation();
-    if (point.start && point.start !== id && key === 'end') {
+    if (point.start && point.start !== id && key === "end") {
       setPoint({
         ...point,
         end: id,
@@ -132,11 +134,15 @@ const SimpleTemplate = ({updateXarrow}) => {
           end: id,
           parentStart: point.parentStart,
           parentEnd: parentId,
-          position:position
+          position: position,
         },
-      ]);console.log(parentConnection)
-      if(!parentConnection.some(items=>items.end===parentId)){
-        setParentConnection([...parentConnection,{start:point.parentStart, end: parentId}])
+      ]);
+      console.log(parentConnection);
+      if (!parentConnection.some((items) => items.end === parentId)) {
+        setParentConnection([
+          ...parentConnection,
+          { start: point.parentStart, end: parentId },
+        ]);
       }
       setPoint({
         start: null,
@@ -160,8 +166,8 @@ const SimpleTemplate = ({updateXarrow}) => {
   };
 
   useEffect(() => {
-    console.log(connection)
-  }, [connection])
+    console.log(connection);
+  }, [connection]);
 
   //on mouse down start making connection
   const connectNode = (e, id, parentId, key) => {
@@ -169,10 +175,8 @@ const SimpleTemplate = ({updateXarrow}) => {
     e.stopPropagation();
     var element = e.target;
     let boxCenter = {
-      x:
-        element.getBoundingClientRect().left,
-      y:
-        element.getBoundingClientRect().top-5,
+      x: element.getBoundingClientRect().left,
+      y: element.getBoundingClientRect().top - 5,
     };
     var topPos = element.getBoundingClientRect().top + window.scrollY;
     var leftPos = element.getBoundingClientRect().left + window.scrollX;
@@ -191,14 +195,15 @@ const SimpleTemplate = ({updateXarrow}) => {
         left: boxCenter.x,
       },
     });
-    document.onmousemove = (event) => {console.log(event.pageX, event.pageY, event.target.id)
+    document.onmousemove = (event) => {
+      console.log(event.pageX, event.pageY, event.target.id);
       event.preventDefault();
       let angle =
         Math.atan2(event.pageX - boxCenter.x, -(event.pageY - boxCenter.y)) *
         (180 / Math.PI);
       console.log(event.screenX, event.screenY, event.target.offsetTop);
       const posVal = event.target.getBoundingClientRect();
-      console.log(posVal)
+      console.log(posVal);
       setposition({
         ...position,
         display: true,
@@ -206,7 +211,7 @@ const SimpleTemplate = ({updateXarrow}) => {
         ly: Math.abs(event.pageY - e.pageY),
         style: {
           position: "absolute",
-          top: Math.abs(boxCenter.y+10),
+          top: Math.abs(boxCenter.y + 10),
           left: Math.abs(boxCenter.x),
           width: Math.abs(event.pageX - e.pageX),
           height: Math.abs(event.pageY - e.pageY),
@@ -249,10 +254,16 @@ const SimpleTemplate = ({updateXarrow}) => {
   //remove connsction here
   const removeConnection = (item) => {
     const newarray = connection;
-    const filteredElements = newarray.filter(items=>(items.parentStart===item.parentStart && items.parentEnd === item.parentEnd));
-    if(filteredElements.length<2){
-      const parentIndex = parentConnection.findIndex(ele=>(ele.start === item.parentStart && ele.end === item.parentEnd))
-      parentConnection.splice(parentIndex,1);
+    const filteredElements = newarray.filter(
+      (items) =>
+        items.parentStart === item.parentStart &&
+        items.parentEnd === item.parentEnd
+    );
+    if (filteredElements.length < 2) {
+      const parentIndex = parentConnection.findIndex(
+        (ele) => ele.start === item.parentStart && ele.end === item.parentEnd
+      );
+      parentConnection.splice(parentIndex, 1);
       setParentConnection([...parentConnection]);
     }
     const index = newarray.findIndex((items) => items === item);
@@ -287,7 +298,6 @@ const SimpleTemplate = ({updateXarrow}) => {
   };
 
   const onexpand = (id) => {
-
     setBoxArray([
       ...boxArray.map((items) => {
         if (items.id === id) {
@@ -296,158 +306,202 @@ const SimpleTemplate = ({updateXarrow}) => {
         return items;
       }),
     ]);
-    updateXarrow()
-    document.onclick = () =>{
-      updateXarrow()
-    }
-    setflag(!flag)
+    updateXarrow();
+    document.onclick = () => {
+      updateXarrow();
+    };
+    setflag(!flag);
   };
 
   const getIdandParentid = (items, key) => {
-    if(key==='end'){
-      return document.getElementById(items.end) ? items.end : document.getElementById(items.start) ? items.parentEnd :null;
-    }else if(key==='start'){
-       return (document.getElementById(items.start)) ? items.start : (document.getElementById(items.end)) ? items.parentStart :null;
+    if (key === "end") {
+      return document.getElementById(items.end)
+        ? items.end
+        : document.getElementById(items.start)
+        ? items.parentEnd
+        : null;
+    } else if (key === "start") {
+      return document.getElementById(items.start)
+        ? items.start
+        : document.getElementById(items.end)
+        ? items.parentStart
+        : null;
     }
-  }
-  
+  };
+
   return (
     <>
       <div style={canvasStyle} id="canvas" onScroll={scrollFunc}>
         {/* <Xwrapper> */}
-          {position.display && (
-            <svg style={position.style}>
-              <g>
-                <path
-                  className="line"
-                  // d={`M ${position.sX}, ${position.sy} L ${position.lx}, ${position.sy} `}
-                  fill="none"
-                  d={`M${position.sX},${position.sy} 
-                  h${position.lx/2} 
-                  v${position.ly} 
-                  h${position.lx/2}
-                  `}
-                  // d={getSmoothStepPath(position.sX, position.sy, 'top', position.lX, position.ly, 'top')}
-                />
-              </g>
-            </svg>
-          )}
-          {
-            connection.map((items)=>{
-              <svg style={items.position.style}>
+        {position.display && (
+          <svg style={position.style}>
+            <g>
               <path
                 className="line"
                 // d={`M ${position.sX}, ${position.sy} L ${position.lx}, ${position.sy} `}
                 fill="none"
-                d={`M${items.position.sX},${items.position.sy} 
-                 h${items.position.lx/2} 
-                 v${items.position.ly} 
-                 h${items.position.lx/2}`}
+                d={`M${position.sX},${position.sy} 
+                  h${position.lx / 2} 
+                  v${position.ly} 
+                  h${position.lx / 2}
+                  `}
+                // d={getSmoothStepPath(position.sX, position.sy, 'top', position.lX, position.ly, 'top')}
               />
-            </svg>
-            })
-          }
-          {/* <svg>
+            </g>
+          </svg>
+        )}
+        {connection.map((items) => {
+          <svg style={items.position.style}>
+            <path
+              className="line"
+              // d={`M ${position.sX}, ${position.sy} L ${position.lx}, ${position.sy} `}
+              fill="none"
+              d={`M${items.position.sX},${items.position.sy} 
+                 h${items.position.lx / 2} 
+                 v${items.position.ly} 
+                 h${items.position.lx / 2}`}
+            />
+          </svg>;
+        })}
+        {/* <svg>
               <path fill="none" className="line" d="M 100, 100 h100 v100 h100 "/>
           </svg> */}
 
-          {/* <svg width="500px" height="320px"> 
+        {/* <svg width="500px" height="320px"> 
             <path d="M200,10 h100 v100 h100 v100 h-100 v100 h-100 v-100 h-100 v-100 h100" fill="none" stroke="black"/>
           </svg> */}
-              
-          {boxArray.map((items) => (
-            <Draggable
-            handle=".handle"
-            key={items.id} 
-            onDrag={(e)=>handleDragPosition(e,items.id)} 
-            onDragEnd={(e)=>onDragEnd(e,items.id)} 
-            style={{position:'absolute',left:items.xpos, top:items.ypos}}
 
-            >
-              <div className="container-side" 
+        {boxArray.map((items) => (
+          <Draggable
+            handle=".handle"
+            key={items.id}
+            onDrag={(e) => handleDragPosition(e, items.id)}
+            onDragEnd={(e) => onDragEnd(e, items.id)}
+            style={{ position: "absolute", left: items.xpos, top: items.ypos }}
+          >
+            <div
+              className="container-side"
               id={items.id}
-              style={{ width:'200px', height:'fit-content'}}
-               >
-                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', width:'100%', position:'relative'}}>
-                    {
-                      // item.left && 
-                      (
-                        <i
-                          className="fa fa-plus"
-                          style={{width:'20px', height:'10px',position:'absolute', left:'-5px'}}
-                          onMouseDown={(e) =>
-                            connectNode(e, items.id+items.name, null,'start')
-                          }
-                          onMouseUp={(e) => onMouseUp(e, items.id+items.name, null,'end')}
-                        ></i>
-                      )}
-                    <h3 style={{ width:'100%', textAlign:'center'}} onStart={true} className="handle" id={items.id+items.name}>{items.name}</h3>
-                    {
-                      // item.right && 
-                      (
-                        <i
-                          className="fa fa-plus"
-                          style={{width:'20px', height:'10px',position:'absolute', right:'-5px'}}
-                          onMouseDown={(e) =>
-                            connectNode(e, items.id+items.name, null,'start')
-                          }
-                          onMouseUp={(e) => onMouseUp(e, items.id+items.name, null,'end')}
-                        ></i>
-                      )}
-                 </div>
-                <button onClick={() => onexpand(items.id)} className="expandButton">+</button>
-                <div>
-                  {items.expand &&
-                    items.child.map((item) => (
-                      <>
+              style={{ width: "200px", height: "fit-content" }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
+                  position: "relative",
+                }}
+              >
+                {
+                  // item.left &&
+                  <i
+                    className="fa fa-plus"
+                    style={{
+                      width: "20px",
+                      height: "10px",
+                      position: "absolute",
+                      left: "-5px",
+                    }}
+                    onMouseDown={(e) =>
+                      connectNode(e, items.id + items.name, null, "start")
+                    }
+                    onMouseUp={(e) =>
+                      onMouseUp(e, items.id + items.name, null, "end")
+                    }
+                  ></i>
+                }
+                <h3
+                  style={{ width: "100%", textAlign: "center" }}
+                  onStart={true}
+                  className="handle"
+                  id={items.id + items.name}
+                >
+                  {items.name}
+                </h3>
+                {
+                  // item.right &&
+                  <i
+                    className="fa fa-plus"
+                    style={{
+                      width: "20px",
+                      height: "10px",
+                      position: "absolute",
+                      right: "-5px",
+                    }}
+                    onMouseDown={(e) =>
+                      connectNode(e, items.id + items.name, null, "start")
+                    }
+                    onMouseUp={(e) =>
+                      onMouseUp(e, items.id + items.name, null, "end")
+                    }
+                  ></i>
+                }
+              </div>
+              <button
+                onClick={() => onexpand(items.id)}
+                className="expandButton"
+              >
+                +
+              </button>
+              <div>
+                {items.expand &&
+                  items.child.map((item) => (
+                    <>
+                      <div>
                         <div>
-                          <div>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            {
+                              // item.left &&
+                              <i
+                                className="fa fa-plus"
+                                style={{ width: "10px", height: "10px" }}
+                                onMouseDown={(e) =>
+                                  connectNode(e, item.id, items.id, "start")
+                                }
+                                onMouseUp={(e) =>
+                                  onMouseUp(e, item.id, items.id, "end")
+                                }
+                              ></i>
+                            }
                             <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
+                              id={item.id}
+                              style={{ ...boxStyle }}
+                              onMouseUp={(e) =>
+                                onMouseUp(e, item.id, items.id, "end")
+                              }
                             >
-                              {
-                              // item.left && 
-                              (
-                                <i
-                                  className="fa fa-plus"
-                                  style={{width:'10px', height:'10px'}}
-                                  onMouseDown={(e) =>
-                                    connectNode(e, item.id, items.id,'start')
-                                  }
-                                  onMouseUp={(e) => onMouseUp(e, item.id, items.id,'end')}
-                                ></i>
-                              )}
-                              <div id={item.id} style={{ ...boxStyle }} 
-                              onMouseUp={(e) => onMouseUp(e, item.id, items.id,'end')}
-                              >
-                                <input type="checkbox"/> <p>Column</p>
-                              </div>
-                              {
-                              // item.right && 
-                              (
-                                <i
-                                  className="fa fa-plus"
-                                  style={{width:'10px', height:'10px'}}
-                                  onMouseDown={(e) =>
-                                    connectNode(e, item.id, items.id,'start')
-                                  }
-                                  onMouseUp={(e) => onMouseUp(e, item.id, items.id,'end')}
-                                ></i>
-                              )}
+                              <input type="checkbox" /> <p>Column</p>
                             </div>
+                            {
+                              // item.right &&
+                              <i
+                                className="fa fa-plus"
+                                style={{ width: "10px", height: "10px" }}
+                                onMouseDown={(e) =>
+                                  connectNode(e, item.id, items.id, "start")
+                                }
+                                onMouseUp={(e) =>
+                                  onMouseUp(e, item.id, items.id, "end")
+                                }
+                              ></i>
+                            }
                           </div>
                         </div>
-                      </>
-                    ))}
-                </div>
+                      </div>
+                    </>
+                  ))}
               </div>
-            </Draggable>
-          ))}
-          {/* {
+            </div>
+          </Draggable>
+        ))}
+        {/* {
             parentConnection.length &&
             parentConnection.map((items)=>            
             <Xarrow
@@ -467,28 +521,28 @@ const SimpleTemplate = ({updateXarrow}) => {
             )
           } */}
 
-          {connection.length
-            ? connection.map((items) => (
-                <Line
-                  path="grid"
-                  strokeWidth={0.5}
-                  zIndex={1000}
-                  headSize={16}
-                  color="black"
-                  start={getIdandParentid(items,'start')}
-                  end={ getIdandParentid(items,'end')}
-                  labels={
-                    <i
-                      className="fas fa-times"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => removeConnection(items)}
-                    ></i>
-                  }
-                  startAnchor="auto"
-                  endAnchor="auto"
-                />
-              ))
-            : ""}
+        {connection.length
+          ? connection.map((items) => (
+              <Line
+                path="grid"
+                strokeWidth={0.5}
+                zIndex={1000}
+                headSize={16}
+                color="black"
+                start={getIdandParentid(items, "start")}
+                end={getIdandParentid(items, "end")}
+                labels={
+                  <i
+                    className="fas fa-times"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => removeConnection(items)}
+                  ></i>
+                }
+                startAnchor="auto"
+                endAnchor="auto"
+              />
+            ))
+          : ""}
         {/* </Xwrapper> */}
       </div>
     </>

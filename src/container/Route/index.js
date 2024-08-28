@@ -6,6 +6,7 @@ import ReactflowDnd from "../../components/ReactFlowDnd";
 import ReactXarrow from "../../components/Xarrow2";
 import ReactSidebar from "../../components/Sidebar";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import SimpleTemplate from "../../components/Xarrow/NodeArrow";
 
 const RouteContainer = (props) => {
   console.log(props);
@@ -30,6 +31,7 @@ const RouteContainer = (props) => {
           </Route>
           <Route path="/">
             <ReactXarrow />
+            {/* <SimpleTemplate /> */}
           </Route>
         </Switch>
       </Router>
