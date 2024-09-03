@@ -2,23 +2,21 @@ import React, { useRef, useState } from "react";
 import Xarrow, { useXarrow, Xwrapper } from "react-xarrows";
 import Draggable from "react-draggable";
 import { data } from "./data";
-import AddIcon from "@mui/icons-material/Add";
-import { Button } from "@mui/material";
+import { AddOutlined } from "@mui/icons-material";
 
 const boxStyle = {
   border: "grey solid 2px",
   borderRadius: "10px",
-  padding: "8px 20px",
+  padding: "5px",
 };
 
 const XarrowComponent = () => {
-  const [xarrowsLine, setxarrowsLine] = useState([]);
-  const [sourceId, setsourceId] = useState(null);
+  const [connections, setConnections] = useState([]);
 
-  function handleAddconnect(sId, dId) {
-    console.log(sId, dId);
+  const [sourceId, setSourceId] = useState(null);
 
-    setxarrowsLine([...xarrowsLine, { sId, dId }]);
+  function addConnect(sId, tId) {
+    setConnections([...connections, { sId, tId }]);
   }
   return (
     <div
@@ -29,51 +27,49 @@ const XarrowComponent = () => {
           <DraggableBox
             id={item.id}
             name={item.name}
-            addconnect={handleAddconnect}
-            setsourceId={setsourceId}
+            addConnect={addConnect}
             sourceId={sourceId}
+            setSourceId={setSourceId}
           />
         ))}
-        {xarrowsLine.map((item, i) => (
-          <Xarrow start={item.sId} end={item.dId} showHead={true} />
+        {connections.map((item, i) => (
+          <Xarrow start={item?.sId} end={item?.tId} showHead={true} />
         ))}
       </Xwrapper>
     </div>
   );
 };
 
-const DraggableBox = ({ id, name, addconnect, setsourceId, sourceId }) => {
+const DraggableBox = ({ id, name, addConnect, sourceId, setSourceId }) => {
   const updateXarrow = useXarrow();
 
-  function handleClickNode(e, id) {
-    e.stopPropagation();
+  function onMouseDrag(e, id) {
     e.preventDefault();
+    e.stopPropagation();
+    setSourceId(id);
     console.log(e.target, id);
-    setsourceId(id);
   }
-
-  function handleLeaveNode(e, id) {
-    console.log(e.target, "hiii", id);
-    console.log(sourceId);
-    addconnect(sourceId, id);
+  function onMouseStop(e, id) {
+    console.log(sourceId, id);
+    addConnect(sourceId, id);
   }
   return (
     <Draggable onDrag={updateXarrow} onStop={updateXarrow}>
       <div style={{ display: "flex", alignItems: "center" }}>
-        <AddIcon
-          id={id + "_1"}
+        <AddOutlined
           fontSize="small"
-          onMouseDown={(e) => handleClickNode(e, id + "_1")}
-          onMouseUp={(e) => handleLeaveNode(e, id + "_1")}
+          id={`${id}_1`}
+          onMouseDown={(e) => onMouseDrag(e, `${id}_1`)}
+          onMouseUp={(e) => onMouseStop(e, `${id}_1`)}
         />
         <div id={id} style={boxStyle}>
           {name}
         </div>
-        <AddIcon
+        <AddOutlined
           fontSize="small"
-          id={id + "_2"}
-          onMouseDown={(e) => handleClickNode(e, id + "_2")}
-          onMouseUp={(e) => handleLeaveNode(e, id + "_2")}
+          id={`${id}_2`}
+          onMouseDown={(e) => onMouseDrag(e, `${id}_2`)}
+          onMouseUp={(e) => onMouseStop(e, `${id}_2`)}
         />
       </div>
     </Draggable>
