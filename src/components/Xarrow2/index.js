@@ -14,6 +14,11 @@ const XarrowComponent = () => {
   const [connections, setConnections] = useState([]);
 
   const [sourceId, setSourceId] = useState(null);
+  const [movableEle, setmovableEle] = useState(null);
+  const [movePos, setmovePos] = useState({
+    top: 0,
+    left: 0,
+  });
 
   function addConnect(sId, tId) {
     setConnections([...connections, { sId, tId }]);
@@ -30,17 +35,44 @@ const XarrowComponent = () => {
             addConnect={addConnect}
             sourceId={sourceId}
             setSourceId={setSourceId}
+            setmovableEle={setmovableEle}
+            setmovePos={setmovePos}
           />
         ))}
         {connections.map((item, i) => (
           <Xarrow start={item?.sId} end={item?.tId} showHead={true} />
         ))}
+        {sourceId && movableEle && (
+          <Xarrow start={sourceId} end={movableEle} showHead={true} />
+        )}
+        {sourceId && movableEle && (
+          <div
+            id="moveEle"
+            style={{
+              visibility: "hidden",
+              width: "10px",
+              height: "10px",
+              background: "green",
+              position: "absolute",
+              top: movePos.top,
+              left: movePos.left,
+            }}
+          ></div>
+        )}
       </Xwrapper>
     </div>
   );
 };
 
-const DraggableBox = ({ id, name, addConnect, sourceId, setSourceId }) => {
+const DraggableBox = ({
+  id,
+  name,
+  addConnect,
+  sourceId,
+  setSourceId,
+  setmovableEle,
+  setmovePos,
+}) => {
   const updateXarrow = useXarrow();
 
   function onMouseDrag(e, id) {
@@ -48,7 +80,23 @@ const DraggableBox = ({ id, name, addConnect, sourceId, setSourceId }) => {
     e.stopPropagation();
     setSourceId(id);
     console.log(e.target, id);
+    document.onmousemove = onMousemove;
+    document.onmouseup = onMouseDragStop;
   }
+
+  function onMousemove(e) {
+    setmovePos({
+      top: e.clientY,
+      left: e.clientX,
+    });
+    setmovableEle("moveEle");
+  }
+
+  function onMouseDragStop(e) {
+    setmovableEle(null);
+    document.onmousemove = null;
+  }
+
   function onMouseStop(e, id) {
     console.log(sourceId, id);
     addConnect(sourceId, id);
