@@ -103,23 +103,64 @@ const DraggableBox = ({
 
   return (
     <Draggable onDrag={updateXarrow} onStop={updateXarrow}>
-      <div style={{ display: "", alignItems: "center", textAlign: "center" }}>
+      <div
+        style={{
+          display: "",
+          alignItems: "center",
+          textAlign: "center",
+          position: "relative",
+        }}
+      >
         <AddOutlined
           fontSize="small"
-          id={`${id}_1`}
-          onMouseDown={(e) => onMouseDrag(e, `${id}_1`)}
-          onMouseUp={(e) => onMouseStop(e, `${id}_1`)}
-          style={{ fontSize: "10px" }}
+          id={`${id}_1_t`}
+          onMouseDown={(e) => onMouseDrag(e, `${id}_1_t`)}
+          onMouseUp={(e) => onMouseStop(e, `${id}_1_t`)}
+          style={{
+            fontSize: "10px",
+            position: "absolute",
+            top: 0,
+            left: "45%",
+          }}
+        />
+        <AddOutlined
+          fontSize="small"
+          id={`${id}_1_l`}
+          onMouseDown={(e) => onMouseDrag(e, `${id}_1_l`)}
+          onMouseUp={(e) => onMouseStop(e, `${id}_1_l`)}
+          style={{
+            fontSize: "10px",
+            position: "absolute",
+            top: "35%",
+            left: 0,
+          }}
         />
         <div id={id} style={boxStyle}>
           {name}
         </div>
         <AddOutlined
           fontSize="small"
-          id={`${id}_2`}
-          onMouseDown={(e) => onMouseDrag(e, `${id}_2`)}
-          onMouseUp={(e) => onMouseStop(e, `${id}_2`)}
-          style={{ fontSize: "10px" }}
+          id={`${id}_2_b`}
+          onMouseDown={(e) => onMouseDrag(e, `${id}_2_b`)}
+          onMouseUp={(e) => onMouseStop(e, `${id}_2_b`)}
+          style={{
+            fontSize: "10px",
+            position: "absolute",
+            bottom: 0,
+            left: "45%",
+          }}
+        />
+        <AddOutlined
+          fontSize="small"
+          id={`${id}_2_r`}
+          onMouseDown={(e) => onMouseDrag(e, `${id}_2_r`)}
+          onMouseUp={(e) => onMouseStop(e, `${id}_2_r`)}
+          style={{
+            fontSize: "10px",
+            position: "absolute",
+            top: "35%",
+            right: 0,
+          }}
         />
       </div>
     </Draggable>
