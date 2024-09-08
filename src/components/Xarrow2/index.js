@@ -14,8 +14,8 @@ const XarrowComponent = () => {
   const [connections, setConnections] = useState([]);
 
   const [sourceId, setSourceId] = useState(null);
-  const [moveElementid, setMoveElementId] = useState(null);
-  const [position, setPosition] = useState({
+  const [movableEle, setmovableEle] = useState(null);
+  const [movePos, setmovePos] = useState({
     top: 0,
     left: 0,
   });
@@ -24,7 +24,6 @@ const XarrowComponent = () => {
     setConnections([...connections, { sId, tId }]);
   }
 
-  console.log(position, moveElementid);
   return (
     <div
       style={{ display: "flex", justifyContent: "space-evenly", width: "100%" }}
@@ -37,28 +36,30 @@ const XarrowComponent = () => {
             addConnect={addConnect}
             sourceId={sourceId}
             setSourceId={setSourceId}
-            setMoveElementId={setMoveElementId}
-            setPosition={setPosition}
+            setmovableEle={setmovableEle}
+            setmovePos={setmovePos}
           />
         ))}
         {connections.map((item, i) => (
           <Xarrow start={item?.sId} end={item?.tId} showHead={true} />
         ))}
-        {sourceId && moveElementid && (
-          <Xarrow start={sourceId} end={moveElementid} showHead={true} />
+        {sourceId && movableEle && (
+          <Xarrow start={sourceId} end={movableEle} showHead={true} />
         )}
-        <div
-          style={{
-            visibility: "hidden",
-            width: "10px",
-            height: "10px",
-            background: "green",
-            position: "absolute",
-            top: position.top,
-            left: position.left,
-          }}
-          id="moveEle"
-        ></div>
+        {sourceId && movableEle && (
+          <div
+            id="moveEle"
+            style={{
+              visibility: "hidden",
+              width: "10px",
+              height: "10px",
+              background: "green",
+              position: "absolute",
+              top: movePos.top,
+              left: movePos.left,
+            }}
+          ></div>
+        )}
       </Xwrapper>
     </div>
   );
@@ -70,8 +71,8 @@ const DraggableBox = ({
   addConnect,
   sourceId,
   setSourceId,
-  setMoveElementId,
-  setPosition,
+  setmovableEle,
+  setmovePos,
 }) => {
   const updateXarrow = useXarrow();
 
@@ -80,20 +81,20 @@ const DraggableBox = ({
     e.stopPropagation();
     setSourceId(id);
     console.log(e.target, id);
-    document.onmousemove = onMouseMove;
-    document.onmouseup = onMouseUp;
+    document.onmousemove = onMousemove;
+    document.onmouseup = onMouseDragStop;
   }
 
-  function onMouseMove(e) {
-    setMoveElementId("moveEle");
-    setPosition({
-      left: e.clientX,
+  function onMousemove(e) {
+    setmovePos({
       top: e.clientY,
+      left: e.clientX,
     });
+    setmovableEle("moveEle");
   }
 
-  function onMouseUp(e) {
-    setMoveElementId(null);
+  function onMouseDragStop(e) {
+    setmovableEle(null);
     document.onmousemove = null;
   }
 
