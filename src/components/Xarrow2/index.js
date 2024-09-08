@@ -3,6 +3,7 @@ import Xarrow, { useXarrow, Xwrapper } from "react-xarrows";
 import Draggable from "react-draggable";
 import { data } from "./data";
 import { AddOutlined } from "@mui/icons-material";
+import { Box, CylinderShape } from "./shape";
 
 const boxStyle = {
   border: "grey solid 2px",
@@ -29,7 +30,7 @@ const XarrowComponent = () => {
       style={{ display: "flex", justifyContent: "space-evenly", width: "100%" }}
     >
       <Xwrapper>
-        {data.map((item) => (
+        {data.map((item, i) => (
           <DraggableBox
             id={item.id}
             name={item.name}
@@ -38,13 +39,32 @@ const XarrowComponent = () => {
             setSourceId={setSourceId}
             setmovableEle={setmovableEle}
             setmovePos={setmovePos}
+            shapeType={i % 2 === 0 ? "cylinder" : "circle"}
           />
         ))}
         {connections.map((item, i) => (
-          <Xarrow start={item?.sId} end={item?.tId} showHead={true} />
+          <Xarrow
+            start={item?.sId}
+            end={item?.tId}
+            showHead={true}
+            strokeWidth={1}
+            path="smooth"
+            // animateDrawing={true}
+            dashness={{ strokeLen: 5, nonStrokeLen: 5, animation: true }}
+          />
         ))}
         {sourceId && movableEle && (
-          <Xarrow start={sourceId} end={movableEle} showHead={true} />
+          <Xarrow
+            start={sourceId}
+            end={movableEle}
+            showHead={true}
+            labels={"abcd"}
+            color="green"
+            strokeWidth={1}
+            path="smooth"
+            // animateDrawing={true}
+            dashness={{ strokeLen: 5, nonStrokeLen: 5, animation: true }}
+          />
         )}
         {sourceId && movableEle && (
           <div
@@ -65,6 +85,11 @@ const XarrowComponent = () => {
   );
 };
 
+const shapes = {
+  circle: (props) => <Box {...props} />,
+  cylinder: (props) => <CylinderShape {...props} />,
+};
+
 const DraggableBox = ({
   id,
   name,
@@ -73,6 +98,7 @@ const DraggableBox = ({
   setSourceId,
   setmovableEle,
   setmovePos,
+  shapeType,
 }) => {
   const updateXarrow = useXarrow();
 
@@ -105,10 +131,8 @@ const DraggableBox = ({
     <Draggable onDrag={updateXarrow} onStop={updateXarrow}>
       <div
         style={{
-          display: "",
-          alignItems: "center",
           textAlign: "center",
-          position: "relative",
+          position: "absolute",
         }}
       >
         <AddOutlined
@@ -135,9 +159,13 @@ const DraggableBox = ({
             left: 0,
           }}
         />
-        <div id={id} style={boxStyle}>
-          {name}
-        </div>
+        {shapeType ? (
+          shapes[shapeType]({ id })
+        ) : (
+          <div id={id} style={boxStyle}>
+            {name}
+          </div>
+        )}
         <AddOutlined
           fontSize="small"
           id={`${id}_2_b`}
