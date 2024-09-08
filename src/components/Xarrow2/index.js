@@ -3,11 +3,19 @@ import Xarrow, { useXarrow, Xwrapper } from "react-xarrows";
 import Draggable from "react-draggable";
 import { data } from "./data";
 import { AddOutlined } from "@mui/icons-material";
+import { BoxShape, CylinderShape } from "./shapes";
+import { get } from "jquery";
 
 const boxStyle = {
   border: "grey solid 2px",
   borderRadius: "10px",
   padding: "5px",
+  width: "5rem",
+  height: "5rem",
+  borderRadius: "40px",
+  // background: `radial-gradient(50% 40px at 50% 40px, #0003 99.99%, #0000 0),
+  //   radial-gradient(50% 40px at 50% calc(100% - 40px), #fff3 99.99%, #0000 0),
+  //   red`,
 };
 
 const XarrowComponent = () => {
@@ -29,7 +37,7 @@ const XarrowComponent = () => {
       style={{ display: "flex", justifyContent: "space-evenly", width: "100%" }}
     >
       <Xwrapper>
-        {data.map((item) => (
+        {data.map((item, i) => (
           <DraggableBox
             id={item.id}
             name={item.name}
@@ -38,6 +46,7 @@ const XarrowComponent = () => {
             setSourceId={setSourceId}
             setmovableEle={setmovableEle}
             setmovePos={setmovePos}
+            shape={i % 2 === 0 ? "box" : "cylinder"}
           />
         ))}
         {connections.map((item, i) => (
@@ -65,6 +74,11 @@ const XarrowComponent = () => {
   );
 };
 
+const shapes = {
+  box: (props) => <BoxShape {...props} />,
+  cylinder: (props) => <CylinderShape {...props} />,
+};
+
 const DraggableBox = ({
   id,
   name,
@@ -73,6 +87,7 @@ const DraggableBox = ({
   setSourceId,
   setmovableEle,
   setmovePos,
+  shape,
 }) => {
   const updateXarrow = useXarrow();
 
@@ -102,18 +117,30 @@ const DraggableBox = ({
     console.log(sourceId, id);
     addConnect(sourceId, id);
   }
+
+  const Component = get(shapes, shape);
+
   return (
     <Draggable onDrag={updateXarrow} onStop={updateXarrow}>
-      <div style={{ display: "flex", alignItems: "center" }}>
+      <div
+        style={{
+          textAlign: "center",
+          position: "absolute",
+        }}
+      >
         <AddOutlined
           fontSize="small"
           id={`${id}_1`}
           onMouseDown={(e) => onMouseDrag(e, `${id}_1`)}
           onMouseUp={(e) => onMouseStop(e, `${id}_1`)}
         />
-        <div id={id} style={boxStyle}>
-          {name}
-        </div>
+        {shape ? (
+          shapes[shape]({ id })
+        ) : (
+          <div id={id} style={boxStyle}>
+            {name}
+          </div>
+        )}
         <AddOutlined
           fontSize="small"
           id={`${id}_2`}
