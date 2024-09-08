@@ -6,8 +6,9 @@ import { AddOutlined } from "@mui/icons-material";
 
 const boxStyle = {
   border: "grey solid 2px",
-  borderRadius: "10px",
+  borderRadius: "4px",
   padding: "5px",
+  width: "5rem",
 };
 
 const XarrowComponent = () => {
@@ -79,7 +80,6 @@ const DraggableBox = ({
     e.preventDefault();
     e.stopPropagation();
     setSourceId(id);
-    console.log(e.target, id);
     document.onmousemove = onMousemove;
     document.onmouseup = onMouseDragStop;
   }
@@ -98,17 +98,18 @@ const DraggableBox = ({
   }
 
   function onMouseStop(e, id) {
-    console.log(sourceId, id);
     addConnect(sourceId, id);
   }
+
   return (
     <Draggable onDrag={updateXarrow} onStop={updateXarrow}>
-      <div style={{ display: "flex", alignItems: "center" }}>
+      <div style={{ display: "", alignItems: "center", textAlign: "center" }}>
         <AddOutlined
           fontSize="small"
           id={`${id}_1`}
           onMouseDown={(e) => onMouseDrag(e, `${id}_1`)}
           onMouseUp={(e) => onMouseStop(e, `${id}_1`)}
+          style={{ fontSize: "10px" }}
         />
         <div id={id} style={boxStyle}>
           {name}
@@ -118,6 +119,7 @@ const DraggableBox = ({
           id={`${id}_2`}
           onMouseDown={(e) => onMouseDrag(e, `${id}_2`)}
           onMouseUp={(e) => onMouseStop(e, `${id}_2`)}
+          style={{ fontSize: "10px" }}
         />
       </div>
     </Draggable>
