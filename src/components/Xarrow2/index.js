@@ -4,6 +4,7 @@ import Draggable from "react-draggable";
 import { data } from "./data";
 import { AddOutlined } from "@mui/icons-material";
 import { Box, CylinderShape } from "./shape";
+import dagre from "dagre";
 
 const boxStyle = {
   border: "grey solid 2px",
@@ -12,9 +13,61 @@ const boxStyle = {
   width: "5rem",
 };
 
-const XarrowComponent = () => {
-  const [connections, setConnections] = useState([]);
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
 
+const nodeWidth = 172;
+const nodeHeight = 200;
+
+const getLayoutedElements = (nodes, edges, direction = "LR") => {
+  const isHorizontal = direction === "LR";
+  dagreGraph.setGraph({ rankdir: direction });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.sId, edge.tId);
+  });
+
+  dagre.layout(dagreGraph);
+
+  const newNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    const newNode = {
+      ...node,
+      targetPosition: isHorizontal ? "left" : "top",
+      sourcePosition: isHorizontal ? "right" : "bottom",
+      // We are shifting the dagre node position (anchor=center center) to the top left
+      // so it matches the React Flow node anchor point (top left).
+      position: {
+        x: 500 + nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
+      },
+    };
+
+    return newNode;
+  });
+
+  return { nodes: newNodes, edges };
+};
+
+const XarrowComponent = () => {
+  const [connections, setConnections] = useState([
+    {
+      sId: "ele1_2_b",
+      tId: "ele4_1_t",
+    },
+    {
+      sId: "ele4_2_b",
+      tId: "ele3_1_t",
+    },
+    {
+      sId: "ele3_2_b",
+      tId: "ele2_1_t",
+    },
+  ]);
   const [sourceId, setSourceId] = useState(null);
   const [movableEle, setmovableEle] = useState(null);
   const [movePos, setmovePos] = useState({
@@ -22,15 +75,22 @@ const XarrowComponent = () => {
     left: 0,
   });
 
+  const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+    data,
+    connections
+  );
+
   function addConnect(sId, tId) {
     setConnections([...connections, { sId, tId }]);
   }
+
+  function autoLayout() {}
   return (
     <div
       style={{ display: "flex", justifyContent: "space-evenly", width: "100%" }}
     >
       <Xwrapper>
-        {data.map((item, i) => (
+        {layoutedNodes.map((item, i) => (
           <DraggableBox
             id={item.id}
             name={item.name}
@@ -40,9 +100,10 @@ const XarrowComponent = () => {
             setmovableEle={setmovableEle}
             setmovePos={setmovePos}
             shapeType={i % 2 === 0 ? "cylinder" : "circle"}
+            position={item?.position}
           />
         ))}
-        {connections.map((item, i) => (
+        {layoutedEdges.map((item, i) => (
           <Xarrow
             start={item?.sId}
             end={item?.tId}
@@ -99,6 +160,7 @@ const DraggableBox = ({
   setmovableEle,
   setmovePos,
   shapeType,
+  position,
 }) => {
   const updateXarrow = useXarrow();
 
@@ -131,8 +193,10 @@ const DraggableBox = ({
     <Draggable onDrag={updateXarrow} onStop={updateXarrow}>
       <div
         style={{
-          textAlign: "center",
+          // textAlign: "center",
           position: "absolute",
+          top: position?.y,
+          left: position?.x,
         }}
       >
         <AddOutlined
