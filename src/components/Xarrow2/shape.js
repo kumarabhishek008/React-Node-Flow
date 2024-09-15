@@ -28,4 +28,16 @@ const CylinderShape = ({ id }) => {
   return <div id={id} style={cylinderStyle} />;
 };
 
-export { Box, CylinderShape };
+const endNodeStyle = {
+  border: "grey solid 2px",
+  borderRadius: "4px",
+  padding: "5px",
+  width: "5rem",
+  height: "2rem",
+};
+
+const EndNode = ({ id }) => {
+  return <div id={id} style={endNodeStyle} />;
+};
+
+export { Box, CylinderShape, EndNode };

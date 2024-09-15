@@ -2,9 +2,11 @@ import React, { useRef, useState } from "react";
 import Xarrow, { useXarrow, Xwrapper } from "react-xarrows";
 import Draggable from "react-draggable";
 import { data } from "./data";
-import { AddOutlined } from "@mui/icons-material";
-import { Box, CylinderShape } from "./shape";
+import { AddOutlined, Close } from "@mui/icons-material";
+import { Box, CylinderShape, EndNode } from "./shape";
 import dagre from "dagre";
+import { IconButton } from "@mui/material";
+import { get, has, random, stubString } from "lodash";
 
 const boxStyle = {
   border: "grey solid 2px",
@@ -17,23 +19,60 @@ const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
 const nodeWidth = 172;
-const nodeHeight = 200;
+const nodeHeight = 50;
 
 const getLayoutedElements = (nodes, edges, direction = "LR") => {
+  let newNodes = [];
+  let newEdges = edges;
+
+  function addEndNode() {
+    const iniNodes = nodes;
+
+    newNodes = iniNodes.reduce((acc, item, i) => {
+      const cihd = !item?.situation?.child?.length && item?.type !== "endnode";
+      if (cihd) {
+        let addNode = {
+          id: String(random(999999, 99999999)),
+          type: "endnode",
+          name: "Add",
+          situation: {
+            child: [],
+            parent: [item.id],
+          },
+          positions: {
+            x: 400,
+            y: 400,
+          },
+        };
+        console.log(addNode);
+        item.situation.child = [...item?.situation?.child, addNode?.id];
+        newEdges = [...newEdges, { sId: item?.id, tId: addNode.id }];
+        acc.push(item);
+        acc.push(addNode);
+      } else {
+        acc.push(item);
+      }
+      return acc;
+    }, []);
+    return newNodes;
+  }
+  addEndNode();
   const isHorizontal = direction === "LR";
   dagreGraph.setGraph({ rankdir: direction });
 
-  nodes.forEach((node) => {
+  newNodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
   });
 
-  edges.forEach((edge) => {
+  newEdges.forEach((edge) => {
     dagreGraph.setEdge(edge.sId, edge.tId);
   });
 
   dagre.layout(dagreGraph);
 
-  const newNodes = nodes.map((node) => {
+  console.log(newNodes);
+
+  newNodes = newNodes.map((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
     const newNode = {
       ...node,
@@ -50,22 +89,22 @@ const getLayoutedElements = (nodes, edges, direction = "LR") => {
     return newNode;
   });
 
-  return { nodes: newNodes, edges };
+  return { nodes: newNodes, edges: newEdges };
 };
 
 const XarrowComponent = () => {
   const [connections, setConnections] = useState([
     {
       sId: "ele1_2_b",
-      tId: "ele4_1_t",
+      tId: "ele2_1_t",
     },
     {
-      sId: "ele4_2_b",
+      sId: "ele2_2_b",
       tId: "ele3_1_t",
     },
     {
       sId: "ele3_2_b",
-      tId: "ele2_1_t",
+      tId: "ele4_1_t",
     },
   ]);
   const [sourceId, setSourceId] = useState(null);
@@ -85,6 +124,29 @@ const XarrowComponent = () => {
   }
 
   function autoLayout() {}
+
+  function deleteMe(sid, tid) {
+    const conn = connections.findIndex(
+      (item) => item.sId === sid && item.tId === tid
+    );
+    connections.splice(conn, 1);
+    setConnections([...connections]);
+  }
+
+  function customLabel(conn) {
+    return (
+      <IconButton
+        onClick={() => deleteMe(conn?.sId, conn?.tId)}
+        sx={{
+          background: "lightgray",
+          padding: "2px",
+          boxShadow: "0px 3px 4px #b2b2b2",
+        }}
+      >
+        <Close fontSize="small" color="error" sx={{ fontSize: "12px" }} />
+      </IconButton>
+    );
+  }
   return (
     <div
       style={{ display: "flex", justifyContent: "space-evenly", width: "100%" }}
@@ -99,7 +161,7 @@ const XarrowComponent = () => {
             setSourceId={setSourceId}
             setmovableEle={setmovableEle}
             setmovePos={setmovePos}
-            shapeType={i % 2 === 0 ? "cylinder" : "circle"}
+            shapeType={item.type}
             position={item?.position}
           />
         ))}
@@ -110,7 +172,8 @@ const XarrowComponent = () => {
             showHead={true}
             strokeWidth={1}
             path="smooth"
-            // animateDrawing={true}
+            animateDrawing={true}
+            labels={<>{customLabel(item)}</>}
             dashness={{ strokeLen: 5, nonStrokeLen: 5, animation: true }}
           />
         ))}
@@ -149,6 +212,7 @@ const XarrowComponent = () => {
 const shapes = {
   circle: (props) => <Box {...props} />,
   cylinder: (props) => <CylinderShape {...props} />,
+  endnode: (props) => <EndNode {...props} />,
 };
 
 const DraggableBox = ({
@@ -223,7 +287,7 @@ const DraggableBox = ({
             left: 0,
           }}
         />
-        {shapeType ? (
+        {shapeType && has(shapes, shapeType) ? (
           shapes[shapeType]({ id })
         ) : (
           <div id={id} style={boxStyle}>
