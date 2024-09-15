@@ -9,8 +9,8 @@ const boxStyle = {
   borderRadius: "50px",
 };
 
-const Box = ({ id }) => {
-  return <div id={id} style={boxStyle} />;
+const Box = ({ id, name, onClick }) => {
+  return <div id={id} style={boxStyle} onClick={onClick} />;
 };
 
 const cylinderStyle = {
@@ -24,8 +24,8 @@ const cylinderStyle = {
     red`,
 };
 
-const CylinderShape = ({ id }) => {
-  return <div id={id} style={cylinderStyle} />;
+const CylinderShape = ({ id, name, onClick }) => {
+  return <div id={id} style={cylinderStyle} onClick={onClick} />;
 };
 
 const endNodeStyle = {
@@ -33,11 +33,43 @@ const endNodeStyle = {
   borderRadius: "4px",
   padding: "5px",
   width: "5rem",
-  height: "2rem",
+  height: "20px",
+  cursor: "grab",
 };
 
-const EndNode = ({ id }) => {
-  return <div id={id} style={endNodeStyle} />;
+const EndNode = ({ id, name, onClick }) => {
+  return (
+    <div
+      id={id}
+      style={{
+        ...endNodeStyle,
+        borderRadius: "40px",
+        border: "0px solid #b2b2b2",
+        boxShadow: "0px 3px 5px #cacaca",
+        padding: "5px 5px",
+        cursor: "pointer",
+      }}
+      onClick={onClick}
+    >
+      {name && (
+        <p style={{ fontSize: "12px", margin: "0px", textAlign: "center" }}>
+          {name}
+        </p>
+      )}
+    </div>
+  );
 };
 
-export { Box, CylinderShape, EndNode };
+const Simple = ({ id, name, onClick }) => {
+  return (
+    <div id={id} style={endNodeStyle} onClick={onClick}>
+      {name && (
+        <p style={{ fontSize: "12px", margin: "0px", textAlign: "center" }}>
+          {name}
+        </p>
+      )}
+    </div>
+  );
+};
+
+export { Box, CylinderShape, EndNode, Simple };

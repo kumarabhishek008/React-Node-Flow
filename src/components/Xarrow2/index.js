@@ -1,19 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Xarrow, { useXarrow, Xwrapper } from "react-xarrows";
 import Draggable from "react-draggable";
-import { data } from "./data";
+import { data, edgeConn } from "./data";
 import { AddOutlined, Close } from "@mui/icons-material";
-import { Box, CylinderShape, EndNode } from "./shape";
+import { Box, CylinderShape, EndNode, Simple } from "./shape";
 import dagre from "dagre";
 import { IconButton } from "@mui/material";
-import { get, has, random, stubString } from "lodash";
-
-const boxStyle = {
-  border: "grey solid 2px",
-  borderRadius: "4px",
-  padding: "5px",
-  width: "5rem",
-};
+import { filter, get, has, includes, map, random, stubString } from "lodash";
+import Draggablebox from "./draggablebox";
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -21,42 +15,39 @@ dagreGraph.setDefaultEdgeLabel(() => ({}));
 const nodeWidth = 172;
 const nodeHeight = 50;
 
-const getLayoutedElements = (nodes, edges, direction = "LR") => {
-  let newNodes = [];
-  let newEdges = edges;
+const getLayoutedElements = (nodes, edges, direction = "TB") => {
+  let newNodes = [],
+    newEdges = edges;
+  const iniNodes = nodes;
 
-  function addEndNode() {
-    const iniNodes = nodes;
+  newNodes = iniNodes.reduce((acc, item, i) => {
+    const cihd = !item?.situation?.child?.length && item?.type !== "endnode";
+    if (cihd) {
+      let addNode = {
+        id: String(random(999999, 99999999)),
+        type: "endnode",
+        name: "Add",
+        situation: {
+          child: [],
+          parent: [item.id],
+        },
+        positions: {
+          x: 400,
+          y: 400,
+        },
+      };
+      item.situation.child = [...item?.situation?.child, addNode?.id];
+      newEdges = [...newEdges, { sId: item?.id, tId: addNode.id }];
+      acc.push(item);
+      acc.push(addNode);
+    } else {
+      acc.push(item);
+    }
+    return acc;
+  }, []);
 
-    newNodes = iniNodes.reduce((acc, item, i) => {
-      const cihd = !item?.situation?.child?.length && item?.type !== "endnode";
-      if (cihd) {
-        let addNode = {
-          id: String(random(999999, 99999999)),
-          type: "endnode",
-          name: "Add",
-          situation: {
-            child: [],
-            parent: [item.id],
-          },
-          positions: {
-            x: 400,
-            y: 400,
-          },
-        };
-        console.log(addNode);
-        item.situation.child = [...item?.situation?.child, addNode?.id];
-        newEdges = [...newEdges, { sId: item?.id, tId: addNode.id }];
-        acc.push(item);
-        acc.push(addNode);
-      } else {
-        acc.push(item);
-      }
-      return acc;
-    }, []);
-    return newNodes;
-  }
-  addEndNode();
+  console.log(newNodes, newEdges);
+
   const isHorizontal = direction === "LR";
   dagreGraph.setGraph({ rankdir: direction });
 
@@ -69,8 +60,6 @@ const getLayoutedElements = (nodes, edges, direction = "LR") => {
   });
 
   dagre.layout(dagreGraph);
-
-  console.log(newNodes);
 
   newNodes = newNodes.map((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
@@ -93,20 +82,6 @@ const getLayoutedElements = (nodes, edges, direction = "LR") => {
 };
 
 const XarrowComponent = () => {
-  const [connections, setConnections] = useState([
-    {
-      sId: "ele1_2_b",
-      tId: "ele2_1_t",
-    },
-    {
-      sId: "ele2_2_b",
-      tId: "ele3_1_t",
-    },
-    {
-      sId: "ele3_2_b",
-      tId: "ele4_1_t",
-    },
-  ]);
   const [sourceId, setSourceId] = useState(null);
   const [movableEle, setmovableEle] = useState(null);
   const [movePos, setmovePos] = useState({
@@ -114,23 +89,58 @@ const XarrowComponent = () => {
     left: 0,
   });
 
-  const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-    data,
-    connections
-  );
+  let localNodes = localStorage.getItem("nodes"),
+    localEdges = localStorage.getItem("edges");
+
+  let n = localNodes ? JSON.parse(localNodes) : data,
+    e = localEdges ? JSON.parse(localEdges) : edgeConn;
+
+  const [nodes, setNodes] = useState([]);
+  const [connections, setConnections] = useState([]);
+  const [flag, setflag] = useState(false);
+
+  useEffect(() => {
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      n,
+      e
+    );
+    setNodes(layoutedNodes);
+    setConnections(layoutedEdges);
+  }, []);
 
   function addConnect(sId, tId) {
-    setConnections([...connections, { sId, tId }]);
+    handleSetNodesAndConnections(nodes, [...connections, { sId, tId }]);
   }
 
-  function autoLayout() {}
-
   function deleteMe(sid, tid) {
+    const tgNodes = map(nodes, (item) => {
+      if (item.id === sid && includes(item.situation.child, tid)) {
+        if (item?.situation?.child?.length > 1) {
+          item.situation.child = filter(
+            item.situation.child,
+            (ele) => ele !== tid
+          );
+        } else {
+          item.situation.child = [];
+        }
+      }
+      return item;
+    });
+
+    // let index = tgNodes.findIndex(
+    //   (item) => item.id === tid && item?.type === "endnode"
+    // );
+
+    // if (index > -1) tgNodes.splice(index, 1);
+
+    // change connetion
     const conn = connections.findIndex(
       (item) => item.sId === sid && item.tId === tid
     );
+
     connections.splice(conn, 1);
-    setConnections([...connections]);
+
+    handleSetNodesAndConnections([...tgNodes], [...connections]);
   }
 
   function customLabel(conn) {
@@ -147,13 +157,68 @@ const XarrowComponent = () => {
       </IconButton>
     );
   }
+
+  function addNewNode(endNodeId) {
+    const r = document.getElementById(endNodeId);
+    let positions = r.getBoundingClientRect();
+    const endNode = nodes.find((item) => item.id === endNodeId);
+    let addNode = {
+      id: String(random(999999, 99999999)),
+      type: "simple",
+      name: "New Ele",
+      situation: {
+        child: [endNode.id],
+        parent: endNode.situation.parent,
+      },
+      position: {
+        x: positions.x,
+        y: positions.y,
+      },
+    };
+
+    //
+    handleSetNodesAndConnections(
+      [
+        ...nodes.map((item) => {
+          if (item.id === endNodeId) {
+            item.situation.parent = [addNode.id];
+            item.position.y = positions.y + 2 * nodeHeight;
+          }
+          return item;
+        }),
+        addNode,
+      ],
+      [
+        ...connections.map((item) => {
+          if (item?.tId === endNodeId) {
+            item.tId = addNode.id;
+          }
+          return item;
+        }),
+        { sId: addNode.id, tId: endNodeId },
+      ]
+    );
+  }
+
+  function handleSetNodesAndConnections(nodes, connections) {
+    setNodes([...nodes]);
+    setConnections([...connections]);
+    setflag(!flag);
+    localStorage.setItem("edges", JSON.stringify(connections));
+    localStorage.setItem("nodes", JSON.stringify(nodes));
+  }
+
+  useEffect(() => {
+    setflag(!flag);
+  }, [connections, nodes]);
+
   return (
     <div
       style={{ display: "flex", justifyContent: "space-evenly", width: "100%" }}
     >
       <Xwrapper>
-        {layoutedNodes.map((item, i) => (
-          <DraggableBox
+        {nodes.map((item, i) => (
+          <Draggablebox
             id={item.id}
             name={item.name}
             addConnect={addConnect}
@@ -163,16 +228,17 @@ const XarrowComponent = () => {
             setmovePos={setmovePos}
             shapeType={item.type}
             position={item?.position}
+            addNewNode={addNewNode}
           />
         ))}
-        {layoutedEdges.map((item, i) => (
+        {connections.map((item, i) => (
           <Xarrow
             start={item?.sId}
             end={item?.tId}
             showHead={true}
             strokeWidth={1}
             path="smooth"
-            animateDrawing={true}
+            // animateDrawing={true}
             labels={<>{customLabel(item)}</>}
             dashness={{ strokeLen: 5, nonStrokeLen: 5, animation: true }}
           />
@@ -182,7 +248,7 @@ const XarrowComponent = () => {
             start={sourceId}
             end={movableEle}
             showHead={true}
-            labels={"abcd"}
+            labels={<p style={{ fontSize: "10px" }}>Connect me</p>}
             color="green"
             strokeWidth={1}
             path="smooth"
@@ -206,120 +272,6 @@ const XarrowComponent = () => {
         )}
       </Xwrapper>
     </div>
-  );
-};
-
-const shapes = {
-  circle: (props) => <Box {...props} />,
-  cylinder: (props) => <CylinderShape {...props} />,
-  endnode: (props) => <EndNode {...props} />,
-};
-
-const DraggableBox = ({
-  id,
-  name,
-  addConnect,
-  sourceId,
-  setSourceId,
-  setmovableEle,
-  setmovePos,
-  shapeType,
-  position,
-}) => {
-  const updateXarrow = useXarrow();
-
-  function onMouseDrag(e, id) {
-    e.preventDefault();
-    e.stopPropagation();
-    setSourceId(id);
-    document.onmousemove = onMousemove;
-    document.onmouseup = onMouseDragStop;
-  }
-
-  function onMousemove(e) {
-    setmovePos({
-      top: e.clientY,
-      left: e.clientX,
-    });
-    setmovableEle("moveEle");
-  }
-
-  function onMouseDragStop(e) {
-    setmovableEle(null);
-    document.onmousemove = null;
-  }
-
-  function onMouseStop(e, id) {
-    addConnect(sourceId, id);
-  }
-
-  return (
-    <Draggable onDrag={updateXarrow} onStop={updateXarrow}>
-      <div
-        style={{
-          // textAlign: "center",
-          position: "absolute",
-          top: position?.y,
-          left: position?.x,
-        }}
-      >
-        <AddOutlined
-          fontSize="small"
-          id={`${id}_1_t`}
-          onMouseDown={(e) => onMouseDrag(e, `${id}_1_t`)}
-          onMouseUp={(e) => onMouseStop(e, `${id}_1_t`)}
-          style={{
-            fontSize: "10px",
-            position: "absolute",
-            top: 0,
-            left: "45%",
-          }}
-        />
-        <AddOutlined
-          fontSize="small"
-          id={`${id}_1_l`}
-          onMouseDown={(e) => onMouseDrag(e, `${id}_1_l`)}
-          onMouseUp={(e) => onMouseStop(e, `${id}_1_l`)}
-          style={{
-            fontSize: "10px",
-            position: "absolute",
-            top: "35%",
-            left: 0,
-          }}
-        />
-        {shapeType && has(shapes, shapeType) ? (
-          shapes[shapeType]({ id })
-        ) : (
-          <div id={id} style={boxStyle}>
-            {name}
-          </div>
-        )}
-        <AddOutlined
-          fontSize="small"
-          id={`${id}_2_b`}
-          onMouseDown={(e) => onMouseDrag(e, `${id}_2_b`)}
-          onMouseUp={(e) => onMouseStop(e, `${id}_2_b`)}
-          style={{
-            fontSize: "10px",
-            position: "absolute",
-            bottom: 0,
-            left: "45%",
-          }}
-        />
-        <AddOutlined
-          fontSize="small"
-          id={`${id}_2_r`}
-          onMouseDown={(e) => onMouseDrag(e, `${id}_2_r`)}
-          onMouseUp={(e) => onMouseStop(e, `${id}_2_r`)}
-          style={{
-            fontSize: "10px",
-            position: "absolute",
-            top: "35%",
-            right: 0,
-          }}
-        />
-      </div>
-    </Draggable>
   );
 };
 
