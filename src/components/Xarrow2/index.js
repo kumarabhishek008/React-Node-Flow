@@ -84,6 +84,8 @@ const getLayoutedElements = (nodes, edges, direction = "TB") => {
 const XarrowComponent = () => {
   const [sourceId, setSourceId] = useState(null);
   const [movableEle, setmovableEle] = useState(null);
+  const [dragEle, setDragEle] = useState(null);
+
   const [movePos, setmovePos] = useState({
     top: 0,
     left: 0,
@@ -229,6 +231,8 @@ const XarrowComponent = () => {
             shapeType={item.type}
             position={item?.position}
             addNewNode={addNewNode}
+            dragEle={dragEle}
+            setDragEle={setDragEle}
           />
         ))}
         {connections.map((item, i) => (

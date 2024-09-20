@@ -34,8 +34,16 @@ const DraggableBox = ({
   shapeType,
   position,
   addNewNode,
+  dragEle,
+  setDragEle,
 }) => {
   const updateXarrow = useXarrow();
+
+  function handleDragFunc(e) {
+    updateXarrow();
+    console.log("hi");
+    if (shapeType === "endnode") setDragEle("endnode");
+  }
 
   function onMouseDrag(e, id) {
     e.preventDefault();
@@ -67,15 +75,19 @@ const DraggableBox = ({
   }
 
   function handleClickNode(e) {
-    console.log("clicked me");
-    console.log(e);
+    console.log(dragEle);
+    if (dragEle === "endnode") {
+      setDragEle(null);
+      return null;
+    }
+
     e.preventDefault();
 
     if (shapeType === "endnode") addNewNode(id);
   }
 
   return (
-    <Draggable onDrag={updateXarrow} onStop={updateXarrow}>
+    <Draggable onDrag={handleDragFunc} onStop={updateXarrow}>
       <div
         style={{
           // textAlign: "center",
