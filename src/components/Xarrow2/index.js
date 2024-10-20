@@ -6,7 +6,17 @@ import { AddOutlined, Close } from "@mui/icons-material";
 import { Box, CylinderShape, EndNode, Simple } from "./shape";
 import dagre from "dagre";
 import { IconButton } from "@mui/material";
-import { filter, get, has, includes, map, random, stubString } from "lodash";
+import {
+  clone,
+  filter,
+  find,
+  get,
+  has,
+  includes,
+  map,
+  random,
+  stubString,
+} from "lodash";
 import Draggablebox from "./draggablebox";
 
 const dagreGraph = new dagre.graphlib.Graph();
@@ -82,6 +92,8 @@ const getLayoutedElements = (nodes, edges, direction = "TB") => {
 };
 
 const XarrowComponent = () => {
+  const updateXarrow = useXarrow();
+
   const [sourceId, setSourceId] = useState(null);
   const [movableEle, setmovableEle] = useState(null);
   const [dragEle, setDragEle] = useState(null);
@@ -129,12 +141,6 @@ const XarrowComponent = () => {
       return item;
     });
 
-    // let index = tgNodes.findIndex(
-    //   (item) => item.id === tid && item?.type === "endnode"
-    // );
-
-    // if (index > -1) tgNodes.splice(index, 1);
-
     // change connetion
     const conn = connections.findIndex(
       (item) => item.sId === sid && item.tId === tid
@@ -142,8 +148,31 @@ const XarrowComponent = () => {
 
     connections.splice(conn, 1);
 
+    const findTargetele = find(
+      nodes,
+      (item) => item.id === tid && item?.type === "endnode"
+    );
+
+    setflag(findTargetele);
+
     handleSetNodesAndConnections([...tgNodes], [...connections]);
   }
+
+  useEffect(() => {
+    if (flag) {
+      let nn = clone(nodes);
+      nn = filter(
+        nn,
+        (item) => !(item.id === flag?.id && item?.type === "endnode")
+      );
+      setNodes([...nn]);
+      setflag(null);
+    }
+  }, [connections]);
+
+  // useEffect(() => {
+  //   updateXarrow();
+  // }, [nodes]);
 
   function customLabel(conn) {
     return (
@@ -205,14 +234,9 @@ const XarrowComponent = () => {
   function handleSetNodesAndConnections(nodes, connections) {
     setNodes([...nodes]);
     setConnections([...connections]);
-    setflag(!flag);
-    localStorage.setItem("edges", JSON.stringify(connections));
-    localStorage.setItem("nodes", JSON.stringify(nodes));
+    // localStorage.setItem("edges", JSON.stringify(connections));
+    // localStorage.setItem("nodes", JSON.stringify(nodes));
   }
-
-  useEffect(() => {
-    setflag(!flag);
-  }, [connections, nodes]);
 
   return (
     <div

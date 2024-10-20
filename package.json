@@ -28,6 +28,7 @@
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
+    "re-resizable": "^6.10.0",
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.3",
     "react-country-region-selector": "^3.0.2",

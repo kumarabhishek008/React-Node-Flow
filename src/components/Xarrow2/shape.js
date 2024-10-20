@@ -1,16 +1,24 @@
+import { Resizable } from "re-resizable";
 import React from "react";
 
 const boxStyle = {
   border: "grey solid 2px",
   borderRadius: "4px",
-  padding: "5px",
+  padding: "10px 20px",
   width: "5rem",
   height: "5rem",
   borderRadius: "50px",
 };
 
 const Box = ({ id, name, onClick }) => {
-  return <div id={id} style={boxStyle} onClick={onClick} />;
+  return (
+    <Resizable boxStyle={boxStyle} id={id}>
+      <div
+        // style={boxStyle}
+        onClick={onClick}
+      />
+    </Resizable>
+  );
 };
 
 const cylinderStyle = {
@@ -62,13 +70,18 @@ const EndNode = ({ id, name, onClick }) => {
 
 const Simple = ({ id, name, onClick }) => {
   return (
-    <div id={id} style={endNodeStyle} onClick={onClick}>
-      {name && (
-        <p style={{ fontSize: "12px", margin: "0px", textAlign: "center" }}>
-          {name}
-        </p>
-      )}
-    </div>
+    <Resizable style={boxStyle} id={id}>
+      <div
+        // style={endNodeStyle}
+        onClick={onClick}
+      >
+        {name && (
+          <p style={{ fontSize: "12px", margin: "0px", textAlign: "center" }}>
+            {name}
+          </p>
+        )}
+      </div>
+    </Resizable>
   );
 };
 

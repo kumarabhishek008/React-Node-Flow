@@ -7,6 +7,7 @@ import { Box, CylinderShape, EndNode, Simple } from "./shape";
 import dagre from "dagre";
 import { IconButton } from "@mui/material";
 import { get, has, random, stubString } from "lodash";
+import { Resizable } from "re-resizable";
 
 const shapes = {
   circle: (props) => <Box {...props} />,
@@ -106,7 +107,7 @@ const DraggableBox = ({
               style={{
                 fontSize: "10px",
                 position: "absolute",
-                top: 0,
+                top: "-10px",
                 left: "45%",
               }}
             />
@@ -119,7 +120,7 @@ const DraggableBox = ({
                 fontSize: "10px",
                 position: "absolute",
                 top: "35%",
-                left: 0,
+                left: "-10px",
               }}
             />
             <AddOutlined
@@ -130,7 +131,7 @@ const DraggableBox = ({
               style={{
                 fontSize: "10px",
                 position: "absolute",
-                bottom: 0,
+                bottom: "-10px",
                 left: "45%",
               }}
             />
@@ -143,7 +144,7 @@ const DraggableBox = ({
                 fontSize: "10px",
                 position: "absolute",
                 top: "35%",
-                right: 0,
+                right: "-10px",
               }}
             />
           </>
