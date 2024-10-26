@@ -1,5 +1,5 @@
-import { Resizable } from "re-resizable";
 import React from "react";
+import { Resizable } from "re-resizable";
 
 const boxStyle = {
   border: "grey solid 2px",
