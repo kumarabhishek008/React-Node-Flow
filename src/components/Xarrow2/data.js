@@ -1,3 +1,5 @@
+import { capitalize, uniqueId } from "lodash";
+
 export const data = [
   {
     id: "ele1",
@@ -13,6 +15,7 @@ export const data = [
     },
     targetPosition: "top",
     sourcePosition: "bottom",
+    childrens: [],
     position: {
       x: 500,
       y: 0,
@@ -32,6 +35,7 @@ export const data = [
     },
     targetPosition: "top",
     sourcePosition: "bottom",
+    childrens: [],
     position: {
       x: 500,
       y: 100,
@@ -51,6 +55,7 @@ export const data = [
     },
     targetPosition: "top",
     sourcePosition: "bottom",
+    childrens: [],
     position: {
       x: 500,
       y: 200,
@@ -70,6 +75,7 @@ export const data = [
     },
     targetPosition: "top",
     sourcePosition: "bottom",
+    childrens: [],
     position: {
       x: 500,
       y: 300,
@@ -89,5 +95,38 @@ export const edgeConn = [
   {
     sId: "ele1",
     tId: "ele4",
+  },
+];
+
+export const rawData = [
+  {
+    id: uniqueId("dcvghd"),
+    name: capitalize(uniqueId("dcvghd")[(0, 4)]),
+    parent: "ele4",
+  },
+  {
+    id: uniqueId("dcvghd"),
+    name: capitalize(uniqueId("dcvghd")[(0, 4)]),
+    parent: "ele2",
+  },
+  {
+    id: uniqueId("dcvghd"),
+    name: capitalize(uniqueId("dcvghd")[(0, 4)]),
+    parent: "ele3",
+  },
+  {
+    id: uniqueId("dcvghd"),
+    name: capitalize(uniqueId("dcvghd")[(0, 4)]),
+    parent: "ele4",
+  },
+  {
+    id: uniqueId("dcvghd"),
+    name: capitalize(uniqueId("dcvghd")[(0, 4)]),
+    parent: "ele4",
+  },
+  {
+    id: uniqueId("dcvghd"),
+    name: capitalize(uniqueId("dcvghd")[(0, 4)]),
+    parent: "ele3",
   },
 ];

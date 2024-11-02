@@ -37,6 +37,7 @@ const DraggableBox = ({
   addNewNode,
   dragEle,
   setDragEle,
+  nodeClick,
 }) => {
   const updateXarrow = useXarrow();
 
@@ -85,6 +86,9 @@ const DraggableBox = ({
     e.preventDefault();
 
     if (shapeType === "endnode") addNewNode(id);
+    else {
+      nodeClick(id);
+    }
   }
 
   return (

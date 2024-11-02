@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Xarrow, { useXarrow, Xwrapper } from "react-xarrows";
 import Draggable from "react-draggable";
-import { data, edgeConn } from "./data";
+import { data, edgeConn, rawData } from "./data";
 import { AddOutlined, Close } from "@mui/icons-material";
 import { Box, CylinderShape, EndNode, Simple } from "./shape";
 import dagre from "dagre";
@@ -15,6 +15,7 @@ import {
   includes,
   map,
   random,
+  reduce,
   stubString,
 } from "lodash";
 import Draggablebox from "./draggablebox";
@@ -55,8 +56,6 @@ const getLayoutedElements = (nodes, edges, direction = "TB") => {
     }
     return acc;
   }, []);
-
-  console.log(newNodes, newEdges);
 
   const isHorizontal = direction === "LR";
   dagreGraph.setGraph({ rankdir: direction });
@@ -238,6 +237,78 @@ const XarrowComponent = () => {
     // localStorage.setItem("nodes", JSON.stringify(nodes));
   }
 
+  function handleNodeClick(id) {
+    console.log(id);
+    const ele = find(nodes, { id: id });
+    console.log(ele);
+    const childs = filter(rawData, (r) => r.parent === id);
+    console.log(childs);
+    let newNodes = [];
+    let newEdges = [];
+    if (!ele?.childrens?.length) {
+      childs?.forEach((ch) => {
+        newNodes.push({
+          id: ch?.id,
+          type: "simple",
+          name: ch.name,
+          situation: {
+            child: [],
+            parent: id,
+          },
+          position: {
+            x: 0,
+            y: 0,
+          },
+          positions: {
+            x: 0,
+            y: 0,
+          },
+        });
+        newEdges.push({
+          sId: id,
+          tId: ch.id,
+        });
+      });
+
+      nodes.forEach((items) => {
+        if (items?.id === ele?.id) {
+          items.childrens = map(childs, "id");
+        }
+      });
+
+      const { nodes: layoutedNodes, edges: layoutedEdges } =
+        getLayoutedElements(
+          [...nodes, ...newNodes],
+          [...connections, ...newEdges]
+        );
+      setNodes(layoutedNodes);
+      setConnections(layoutedEdges);
+    } else {
+      let childrens = [...ele?.childrens];
+      nodes.forEach((elements) => {
+        if (includes(childrens, elements?.id)) {
+          childrens = [...childrens, ...elements?.situation?.child];
+        } else if (ele?.id === elements?.id) {
+          elements.childrens = [];
+        }
+      });
+
+      const filterNodes = filter(
+        nodes,
+        (item) => !includes(childrens, item.id)
+      );
+      const filteredConnections = filter(
+        connections,
+        (item) => !includes(childrens, item?.tId)
+      );
+      console.log(filterNodes, filteredConnections);
+      const { nodes: layoutedNodes, edges: layoutedEdges } =
+        getLayoutedElements([...filterNodes], [...filteredConnections]);
+      setNodes(layoutedNodes);
+      setConnections(layoutedEdges);
+    }
+  }
+
   return (
     <div
       style={{ display: "flex", justifyContent: "space-evenly", width: "100%" }}
@@ -257,6 +328,7 @@ const XarrowComponent = () => {
             addNewNode={addNewNode}
             dragEle={dragEle}
             setDragEle={setDragEle}
+            nodeClick={handleNodeClick}
           />
         ))}
         {connections.map((item, i) => (
@@ -265,7 +337,7 @@ const XarrowComponent = () => {
             end={item?.tId}
             showHead={true}
             strokeWidth={1}
-            path="smooth"
+            path="grid"
             // animateDrawing={true}
             labels={<>{customLabel(item)}</>}
             dashness={{ strokeLen: 5, nonStrokeLen: 5, animation: true }}
